@@ -17,7 +17,7 @@
             @RenderBody()
         </div>
         <footer class="ui-footer-fixed">
-            &copy; 2015 Maximus Chang
+            &copy; 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang
         </footer>
     </div>
     @Scripts.Render("~/bundles/jquery")
@@ -29,5 +29,4 @@
     </script>
     @RenderSection("scripts", required: false)
 </body>
-
 </html>
