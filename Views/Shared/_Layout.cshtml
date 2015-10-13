@@ -4,19 +4,12 @@
     @using MaxiJMobile.Models;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@( ViewContext.ActionName() + "(" + ViewContext.ControllerName()+")") - Moto Sotry</title>
+    <title>@( ViewContext.ActionName() + "(" + ViewContext.ControllerName() + ")") - Moto Sotry</title>
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/fontawesome")
     @Scripts.Render("~/bundles/modernizr")
-    @if (!csProp.isCurrentUser)
-    {
-        if (!(ViewContext.ControllerName().ToStringUpper() == "WAY" && ViewContext.ActionName().ToStringUpper() == "INDEX"))
-        {
-            <script>
-                window.location.href = "/";
-            </script>
-        }
-    }
+    @if (!csProp.isCurrentUser && ViewContext.ControllerName().ToStringUpper() != "OAUTH")
+    { Response.Redirect("/OAuth/Index"); }
 </head>
 <body class="classic" data-spy="scroll">
     <div data-role="page">
@@ -24,9 +17,6 @@
             <img src="~/Content/images/preloader.gif" alt="Loading..." class="preloader__img">
         </div>
         <div class="welcome_classic" id="welcome">
-            <a href="https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com%2Fauth%2Fuserinfo.email+https://www.googleapis.com%2Fauth%2Fuserinfo.profile&state=/profile&redirect_uri=http://maximvc.apphb.com/Way/oauth2callback&response_type=code&client_id=430580124379-lija2oi62jtgp7q5lsqnstds534ofegk.apps.googleusercontent.com">
-                使用Google登入
-            </a>
             @RenderBody()
         </div>
         <footer class="ui-footer-fixed">
@@ -42,5 +32,4 @@
     </script>
     @RenderSection("scripts", required: false)
 </body>
-
 </html>
