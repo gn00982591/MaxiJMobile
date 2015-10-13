@@ -1,0 +1,61 @@
+﻿.coming-soon {
+    padding: 120px 0 180px;
+    position: relative;
+    text-align: center;
+    color: #FFFFFF;
+}
+
+.container {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (min-width: 768px) {
+    .container {
+        width: 750px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        width: 970px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        width: 1170px;
+    }
+}
+
+.col-md-12 {
+    width: 100%;
+}
+
+.col-md-8 {
+    width: 66.66666667%;
+}
+
+.col-md-offset-2 {
+    margin-left: 16.66666667%;
+}
+
+.shadow {
+    text-shadow: #000000 0 2px, #000000 2px 0, #000000 -2px 0, #000000 0 -2px, #000000 -1.4px -1.4px, #000000 1.4px 1.4px,#000000 1.4px -1.4px, #000000 -1.4px 1.4px;
+}
+
+.site-title h1 {
+    font-size: 64px;
+    font-family: 'Bitter', serif;
+}
+
+.site-lead {
+    font-size: 22px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+p {
+    margin: 0 0 10px;
+}
