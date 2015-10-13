@@ -262,3 +262,10 @@ body.classic footer .social__item:focus {
   margin: auto;
   z-index: 999999;
 }
+
+.coming-soon {
+    padding: 120px 0 180px;
+    position: relative;
+    text-align: center;
+    color: #FFFFFF;
+}
