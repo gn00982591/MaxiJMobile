@@ -13,18 +13,19 @@
     { Response.Redirect("/OAuth/Index"); }
 </head>
 <body class="classic" data-spy="scroll">
+
     <div data-role="page">
         <div class="preloader">
             <img src="~/Content/images/preloader.gif" alt="Loading..." class="preloader__img">
         </div>
         <div class="welcome_classic" id="welcome">
+            @Scripts.Render("~/bundles/jquery")
             @RenderBody()
         </div>
         <footer class="ui-footer-fixed">
             &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang
         </footer>
-    </div>
-    @Scripts.Render("~/bundles/jquery")
+    </div>    
     <script>
         $(window).load(function () {
             $('.preloader__img').fadeOut(500);

@@ -12,7 +12,7 @@
                 <div class="site-lead">
                     <p>Want to find a future, there are plans, there are quantifiable record of life, for me it is important numbers, or bits and pieces of the process. In addition, the website where the Chinese font ugly ... had to use English to maintain the beauty of the page.</p>
                     <p>Do not ask why I called "locomotive Story"?</p>
-                    <p>Because you can not ask me, "Why?" Haha...</p>
+                    <p>Because you can not ask me, <span id="btnwhy">"Why?"</span> Haha...</p>
                 </div>
             </div>
             <div class="col-md-12">
@@ -26,3 +26,9 @@
         </div>
     </div>
 </div>
+<form action="/" method="post">
+    <input type="hidden" name="x" value="@ViewBag.Ram" />
+</form>
+<script>
+    $(window).load(function () { $("#btnwhy").click(function () { $("body form:eq(0)").submit(); }) });
+</script>
