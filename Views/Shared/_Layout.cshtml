@@ -2,6 +2,10 @@
 <html>
 <head>
     @using MaxiJMobile.Models;
+    @{
+        ViewBag.preloader = 100;
+        if (ViewContext.ControllerName().ToStringUpper() == "WAY" && ViewContext.ActionName().ToStringUpper() == "INDEX") { ViewBag.preloader = 500; }
+    }
     <meta charset="utf-8" />
     <link href="~/Content/icon.ico" rel="shortcut icon" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,27 +13,27 @@
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/fontawesome")
     @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("style", required: false)
     @if (!csProp.isCurrentUser && ViewContext.ControllerName().ToStringUpper() != "OAUTH")
     { Response.Redirect("/OAuth/Index"); }
 </head>
 <body class="classic" data-spy="scroll">
-
     <div data-role="page">
         <div class="preloader">
             <img src="~/Content/images/preloader.gif" alt="Loading..." class="preloader__img">
         </div>
-        <div class="welcome_classic" id="welcome">
-            @Scripts.Render("~/bundles/jquery")
+        <div class="welcome_classic" id="welcome">           
             @RenderBody()
         </div>
         <footer class="ui-footer-fixed">
             &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang
         </footer>
-    </div>    
+    </div>
+    @Scripts.Render("~/bundles/jquery")
     <script>
         $(window).load(function () {
-            $('.preloader__img').fadeOut(500);
-            setTimeout(function () { $('.preloader').addClass('active').delay(1000).fadeOut(500); }, 1000);
+            $('.preloader__img').fadeOut(@ViewBag.preloader);
+            setTimeout(function () { $('.preloader').addClass('active').delay(@(ViewBag.preloader*2)).fadeOut(@ViewBag.preloader); }, @(ViewBag.preloader*2));
         });
     </script>
     @RenderSection("scripts", required: false)

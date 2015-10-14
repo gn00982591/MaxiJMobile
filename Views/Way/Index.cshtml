@@ -1,5 +1,6 @@
-﻿
-<link href="~/Content/view/way.css" rel="stylesheet" />
+﻿@section style{
+    <link href="~/Content/view/way.css" rel="stylesheet" />
+}
 <div class="coming-soon">
     <div class="container">
         <div class="row">
@@ -29,6 +30,8 @@
 <form action="/" method="post">
     <input type="hidden" name="x" value="@ViewBag.Ram" />
 </form>
-<script>
-    $(window).load(function () { $("#btnwhy").click(function () { $("body form:eq(0)").submit(); }) });
-</script>
+@section scripts{
+    <script>
+        $(window).load(function () { $("#btnwhy").click(function () { $("body form:eq(0)").submit(); }); });
+    </script>
+}
