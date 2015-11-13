@@ -3,6 +3,8 @@
 <head>
     @using MaxiJMobile.Models;
     @{
+        var br = Request.Browser;
+        if (br.Browser.ToUpper().Contains("IE") && br.MajorVersion < 9) { Response.Redirect("/WAY/NonSupport"); }
         ViewBag.preloader = 100;
         if (ViewContext.ControllerName().ToStringUpper() == "WAY" && ViewContext.ActionName().ToStringUpper() == "INDEX") { ViewBag.preloader = 500; }
     }
@@ -26,7 +28,7 @@
             @RenderBody()
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang 201510140538
+            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang <span style="font-size:2px;">ver.201511131712</span>
         </footer>
     </div>
     @Scripts.Render("~/bundles/jquery")
