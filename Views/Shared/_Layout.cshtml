@@ -3,10 +3,11 @@
 <head>
     @using MaxiJMobile.Models;
     @{
+        /*版本判斷後，對Jquery不支援的瀏灠器轉到告示畫面*/
         var br = Request.Browser;
         if (br.Browser.ToUpper().Contains("IE") && br.MajorVersion < 9) { Response.Redirect("/WAY/NonSupport"); }
-        ViewBag.preloader = 100;
-        if (ViewContext.ControllerName().ToStringUpper() == "WAY" && ViewContext.ActionName().ToStringUpper() == "INDEX") { ViewBag.preloader = 500; }
+        /*載入動畫的執行時間(毫秒)*/
+        ViewBag.preloader = (ViewContext.ControllerName().ToStringUpper() == "WAY" && ViewContext.ActionName().ToStringUpper() == "INDEX") ? 500 : 100;
     }
     <meta charset="utf-8" />
     <link href="~/Content/icon.ico" rel="shortcut icon" />
@@ -24,11 +25,37 @@
         <div class="preloader">
             <img src="~/Content/images/preloader.gif" alt="Loading..." class="preloader__img">
         </div>
-        <div class="welcome_classic" id="welcome">           
+        <div class="welcome_classic" id="welcome">
+            <section class="left-sidebar">
+                <ul class="main-menu">
+                    @using MaxiJMobile.Models
+                    @{
+                        var name = ViewContext.ControllerName().ToStringUpper();
+                        var vname = ViewContext.ActionName().ToStringUpper();
+                        if (!(name == "WAY" && vname == "INDEX"))
+                        {
+                            using (var db = new db850b60b99a9145fea7aea52f005a5589Entities())
+                            {
+                                if (name != "WAY")
+                                {
+                                    foreach (var i in db.tUrl.Where(s => s.cEnable && s.cId == "00000").OrderBy(s => s.cSort))
+                                    {
+                                        <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
+                                    }
+                                }
+                                foreach (var i in db.tUrl.Where(s => s.cEnable && (name == "WAY" ? s.cUpId == "00000" : s.cFolder == name)).OrderBy(s => s.cSort))
+                                {
+                                    <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
+                                }
+                            }
+                        }
+                    }
+                </ul>
+            </section>
             @RenderBody()
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang <span style="font-size:2px;">ver.201511131712</span>
+            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2015111601</span>
         </footer>
     </div>
     @Scripts.Render("~/bundles/jquery")

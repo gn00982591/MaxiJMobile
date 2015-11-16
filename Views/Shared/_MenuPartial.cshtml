@@ -1,11 +1,27 @@
 ﻿<link href="~/Content/view/sidebar.css" rel="stylesheet" />
 <section class="left-sidebar">
     <ul class="main-menu">
-        <li id="menu-item-text" class="menu-item scroll"><a href="#text">Text</a></li>
-        <li id="menu-item-carousel" class="menu-item scroll"><a href="#carousel">Carousel</a></li>
-        <li id="menu-item-grid" class="menu-item scroll"><a href="#grid">Grid</a></li>
-        <li id="menu-item-featured" class="menu-item scroll"><a href="#featured">Featured</a></li>
-        <li id="menu-item-tabs" class="menu-item scroll"><a href="#tabs">Tabs</a></li>
-        <li id="menu-item-contact" class="menu-item scroll"><a href="#contact">Contact</a></li>
+        @using MaxiJMobile.Models
+        @{
+            var name = ViewContext.ControllerName().ToStringUpper();
+            var vname = ViewContext.ActionName().ToStringUpper();
+            if (!(name == "WAY" && vname == "INDEX"))
+            {
+                using (var db = new db850b60b99a9145fea7aea52f005a5589Entities())
+                {
+                    if (name != "WAY")
+                    {
+                        foreach (var i in db.tUrl.Where(s => s.cEnable && s.cId == "00000").OrderBy(s => s.cSort))
+                        {
+                            <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
+                        }
+                    }
+                    foreach (var i in db.tUrl.Where(s => s.cEnable && (name == "WAY" ? s.cUpId == "00000" : s.cFolder == name)).OrderBy(s => s.cSort))
+                    {
+                        <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
+                    }
+                }
+            }
+        }
     </ul>
 </section>
