@@ -1,6 +1,11 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="~/Content/icon.ico" rel="shortcut icon" />    
+    <title>@ViewContext.TitleName() - Moto Sotry</title>
     @using MaxiJMobile.Models;
     @{
         /*版本判斷後，對Jquery不支援的瀏灠器轉到告示畫面*/
@@ -9,10 +14,6 @@
         /*載入動畫的執行時間(毫秒)*/
         ViewBag.preloader = (ViewContext.ControllerName().ToStringUpper() == "WAY" && ViewContext.ActionName().ToStringUpper() == "INDEX") ? 500 : 100;
     }
-    <meta charset="utf-8" />
-    <link href="~/Content/icon.ico" rel="shortcut icon" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@( ViewContext.ActionName() + "(" + ViewContext.ControllerName() + ")") - Moto Sotry</title>
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/fontawesome")
     @Scripts.Render("~/bundles/modernizr")
@@ -43,7 +44,7 @@
                                         <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
                                     }
                                 }
-                                foreach (var i in db.tUrl.Where(s => s.cEnable && (name == "WAY" ? s.cUpId == "00000" : s.cFolder == name)).OrderBy(s => s.cSort))
+                                foreach (var i in db.tUrl.Where(s => s.cEnable && (name == "WAY" ? s.cUpId == "00000" : (s.cFolder == name && s.cPage.ToUpper() != "INDEX"))).OrderBy(s => s.cSort))
                                 {
                                     <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
                                 }
@@ -55,7 +56,7 @@
             @RenderBody()
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2015111601</span>
+            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2015111701</span>
         </footer>
     </div>
     @Scripts.Render("~/bundles/jquery")
