@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="robots" content="noindex,nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="~/Content/icon.ico" rel="shortcut icon" />    
+    <link href="~/Content/icon.ico" rel="shortcut icon" />
     <title>@ViewContext.TitleName() - Moto Sotry</title>
     @using MaxiJMobile.Models;
     @{
@@ -54,18 +54,21 @@
                 </ul>
             </section>
             @RenderBody()
+            <div id="debug"></div>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2015111701</span>
+            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2015111801</span>
         </footer>
     </div>
     @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @RenderSection("scripts", required: false)
     <script>
         $(window).load(function () {
             $('.preloader__img').fadeOut(@ViewBag.preloader);
             setTimeout(function () { $('.preloader').addClass('active').delay(@(ViewBag.preloader*2)).fadeOut(@ViewBag.preloader); }, @(ViewBag.preloader*2));
+            $.ajaxSetup({"error": function(d){$("#debug").text(d.responseText);}});
         });
-    </script>
-    @RenderSection("scripts", required: false)
+    </script>    
 </body>
 </html>

@@ -1,2 +1,67 @@
-﻿
+﻿@using MaxiJMobile.Models;
+<div class="searcher">
+    <div>
+        <a href="#" id="aupurl" class="hvr-bounce-to-bottom">增修主項目</a>
+        <a href="#" id="aurl" class="hvr-bounce-to-bottom">增修次項目</a>
+        <a href="#" id="asel" class="hvr-bounce-to-bottom hvr-bounce-to-bottom-selected">查詢</a>
+        <form id="frm" name="frm">
+            <table id="tbsel">
+                <tr>
+                    <th>主項目</th>
+                    <td>
+                        <select id="drupurl"></select>
+                    </td>
+                </tr>
+            </table>
+            <table id="tbpurl" class="none">
+                <tr>
+                    <th>主項目：</th>
+                    <td><input type="text" maxlength="10" size="12" placeholder="主項目" /></td>
+                </tr>
+            </table>
+            <div class="dvbtn">
+                <button id="bsubmit" type="button" class="hvr-ripple-out">確認</button>
+                <button type="reset" class="hvr-ripple-out">取消</button>
+            </div>
+            <div id="dialog" ></div>
+        </form>
+    </div>
+</div>
+@section scripts {
+    <script>
+        var oupurl = null;
+        $(window).load(function () {
+            /*主項目資料*/
+            function drupurl() {
+                $.post('@Url.Content(string.Format("~/{0}/getUpUrl", ViewContext.ControllerName()))')
+                .done(function (d) {
+                    if ($.isEmptyObject(d) && d.length <= 0) { alert("EX：無主項目資料!!!"); }
+                    oupurl = d;
+                    var ul = $("#drupurl").selecteAll();
+                    for (var i in d) { ul.append("<option value='" + d[i].cId + "'>" + d[i].cName + "(" + d[i].cId + ")</option>"); }
+                });
+            }
+            drupurl();
+            /*確認*/
+            $("#bsubmit").click(function () {
+                if ($("#tbsel").is(":visible")) {
+                    $("#dialog").text("EX：無主項目資料!!!")
+                        .dialog({ autoOpen: true, modal: true });
 
+                }
+            });
+            //$("#dialog").dialog({
+            //    autoOpen: true,                
+            //    modal: true,
+            //    buttons: {
+            //        Cancel: function () {
+            //            dialog.hide();
+            //        }
+            //    },
+            //    close: function () {
+            //        allFields.removeClass("ui-state-error");
+            //    }
+            //});
+        });
+    </script>
+}
