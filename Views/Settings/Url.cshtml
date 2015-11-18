@@ -22,8 +22,7 @@
             <div class="dvbtn">
                 <button id="bsubmit" type="button" class="hvr-ripple-out">確認</button>
                 <button type="reset" class="hvr-ripple-out">取消</button>
-            </div>
-            <div id="dialog" ></div>
+            </div>            
         </form>
     </div>
 </div>
@@ -35,7 +34,7 @@
             function drupurl() {
                 $.post('@Url.Content(string.Format("~/{0}/getUpUrl", ViewContext.ControllerName()))')
                 .done(function (d) {
-                    if ($.isEmptyObject(d) && d.length <= 0) { alert("EX：無主項目資料!!!"); }
+                    if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX：無主項目資料!!!"); }
                     oupurl = d;
                     var ul = $("#drupurl").selecteAll();
                     for (var i in d) { ul.append("<option value='" + d[i].cId + "'>" + d[i].cName + "(" + d[i].cId + ")</option>"); }
@@ -45,23 +44,9 @@
             /*確認*/
             $("#bsubmit").click(function () {
                 if ($("#tbsel").is(":visible")) {
-                    $("#dialog").text("EX：無主項目資料!!!")
-                        .dialog({ autoOpen: true, modal: true });
-
+                    $.alert("EX：無主項目資料!!!");
                 }
             });
-            //$("#dialog").dialog({
-            //    autoOpen: true,                
-            //    modal: true,
-            //    buttons: {
-            //        Cancel: function () {
-            //            dialog.hide();
-            //        }
-            //    },
-            //    close: function () {
-            //        allFields.removeClass("ui-state-error");
-            //    }
-            //});
         });
     </script>
 }
