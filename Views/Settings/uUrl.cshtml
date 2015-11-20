@@ -1,0 +1,68 @@
+﻿@using MaxiJMobile.Models;
+<div class="searcher">
+    <div>
+        <a href="#" id="aupurl" class="hvr-bounce-to-bottom">增修主項目</a>
+        <a href="#" id="aurl" class="hvr-bounce-to-bottom">增修次項目</a>
+        <a href="#" id="aupsel" class="hvr-bounce-to-bottom hvr-bounce-to-bottom-selected">查詢主項目</a>
+        <a href="#" id="asel" class="hvr-bounce-to-bottom">查詢次項目</a>
+        <form id="frm" name="frm">
+            <table id="tbupsel">
+                <tr>
+                    <th>主項目</th>
+                    <td>
+                        <select id="drupurl"></select>
+                    </td>
+                </tr>
+            </table>
+            <table id="tbpurl" class="none">
+                <tr>
+                    <th>主項目：</th>
+                    <td><input type="text" maxlength="10" size="12" placeholder="主項目" /></td>
+                </tr>
+            </table>
+            <div class="dvbtn">
+                <button id="bsubmit" type="button" class="hvr-ripple-out">確認</button>
+                <button type="reset" class="hvr-ripple-out">取消</button>
+            </div>
+            <div id="dvdata"></div>
+        </form>
+    </div>
+</div>
+@section scripts {
+    <script>
+        $(window).load(function () {
+            /*主項目資料*/
+            function drupurl(func) {
+                $.post('@Url.Content("~/Select/getUpUrl")')
+                    .done(function (d) {
+                        if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
+                        if ($.isFunction(func)) { func(d); }
+                    });
+            }
+            drupurl();
+            /*確認*/
+            $("#bsubmit").click(function () {
+                switch ($(".searcher a").filter(function () { return $(this).hasClass("hvr-bounce-to-bottom-selected"); }).prop("id")) {
+                    case "asel":
+                        /*查詢次項目*/
+                        $.post('@Url.Content("~/Select/getUrlData")')
+                            .done(function (d) {
+                                if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX02：無網頁主項目資料!!!"); }
+                                var ul = $("#drupurl").selecteAll();
+                                for (var i in d) { ul.append("<option value='" + d[i].cId + "'>" + d[i].cName + "(" + d[i].cId + ")</option>"); }
+                            });
+
+                    case "aupsel":
+                    default:
+                        /*查詢主項目*/
+                        drupurl(function (d) {
+                            var ul = $("#drupurl").selecteAll();
+                            for (var i in d) { ul.append("<option value='" + d[i].cId + "'>" + d[i].cName + "(" + d[i].cId + ")</option>"); }
+                        });
+                        break;
+                }
+            });
+            $("#bsubmit").click();
+        });
+    </script>
+}

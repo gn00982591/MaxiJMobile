@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="robots" content="noindex,nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Just Moto Story" />
     <link href="~/Content/icon.ico" rel="shortcut icon" />
     <title>@ViewContext.TitleName() - Moto Sotry</title>
     @using MaxiJMobile.Models;
@@ -17,7 +18,7 @@
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/fontawesome")
     @Scripts.Render("~/bundles/modernizr")
-    <link href="@Url.Content("~/Content/themes/base/all.css")" rel="stylesheet" />    
+    <link href="@Url.Content("~/Content/themes/base/all.css")" rel="stylesheet" />
     @RenderSection("style", required: false)
     @if (!csProp.isCurrentUser && ViewContext.ControllerName().ToStringUpper() != "OAUTH")
     { Response.Redirect("/OAuth/Index"); }
@@ -30,7 +31,6 @@
         <div class="welcome_classic" id="welcome">
             <section class="left-sidebar">
                 <ul class="main-menu">
-                    @using MaxiJMobile.Models
                     @{
                         var name = ViewContext.ControllerName().ToStringUpper();
                         var vname = ViewContext.ActionName().ToStringUpper();
@@ -59,18 +59,14 @@
             <div id="debug"></div>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2015111803</span>
+            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2015112001</span>
         </footer>
     </div>
+    <script>
+        var preloadersec = @ViewBag.preloader;
+    </script>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
     @RenderSection("scripts", required: false)
-    <script>
-        $(window).load(function () {
-            $('.preloader__img').fadeOut(@ViewBag.preloader);
-            setTimeout(function () { $('.preloader').addClass('active').delay(@(ViewBag.preloader*2)).fadeOut(@ViewBag.preloader); }, @(ViewBag.preloader*2));
-            $.ajaxSetup({"error": function(d){$("#debug").text(d.responseText);}});
-        });
-    </script>    
 </body>
 </html>
