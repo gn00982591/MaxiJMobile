@@ -279,6 +279,10 @@ body {
                     text-decoration: none;
                 }
 
+label {
+    cursor: pointer;
+}
+
 table td, table th {
     white-space: nowrap;
 }
@@ -377,6 +381,12 @@ a {
     .searcher th {
         font-size: 18px;
         font-weight: lighter;
+        padding-left: 10px;
+        text-align: right;
+    }
+
+    .searcher td {
+        text-align: left;
     }
 
     .searcher input, .searcher select {
