@@ -1,10 +1,10 @@
 ﻿@using MaxiJMobile.Models;
 <div class="searcher">
     <div>
-        <a href="#" id="aupurl" class="hvr-bounce-to-bottom">新增主項目</a>
-        <a href="#" id="aurl" class="hvr-bounce-to-bottom">新增次項目</a>
-        <a href="#" id="aupsel" class="hvr-bounce-to-bottom hvr-bounce-to-bottom-selected">查修主項目</a>
-        <a href="#" id="asel" class="hvr-bounce-to-bottom">查修次項目</a>
+        <a href="#" id="aupurl">新增主項目</a>
+        <a href="#" id="aurl">新增次項目</a>
+        <a href="#" id="aupsel" class="hvr-bounce-to-bottom-selected">查修主項目</a>
+        <a href="#" id="asel">查修次項目</a>
         <form id="frmupurl">
             <input type="hidden" name="cUpId" value="00000" />
             <table id="tbupurl" class="none">
@@ -25,8 +25,6 @@
             </table>
         </form>
         <form id="frmurl">
-            <input type="hidden" name="cIcon" value="" />
-            <input type="hidden" name="cEnable" value="1" />
             <table id="tburl" class="none">
                 <tr>
                     <th>主索引鍵</th>
@@ -53,16 +51,45 @@
             </table>
         </form>
         <div class="dvbtn">
-            <button id="bsubmit" type="button" class="hvr-ripple-out">確認</button>
-            <button type="reset" class="hvr-ripple-out">取消</button>
+            <button id="bsubmit" type="button">確認</button>
+            <button type="reset">取消</button>
         </div>
         <p></p>
     </div>
 </div>
+<div id="dvupupd" class="upd" title="修改主項目">
+    <form id="frmupupd">
+        <table>
+            <tr>
+                <th>主索引鍵</th>
+                <td><input name="cId" type="text" maxlength="5" size="6" placeholder="主索引鍵" /></td>
+            </tr>
+            <tr>
+                <th>名稱</th>
+                <td><input name="cName" type="text" maxlength="10" size="12" placeholder="名稱" /></td>
+            </tr>
+            <tr>
+                <th>控制</th>
+                <td><select id="controllers" name="cFolder"></select></td>
+            </tr>
+            <tr>
+                <th>顯示頁</th>
+                <td><input name="cPage" type="text" maxlength="5" size="6" placeholder="顯示頁" /></td>
+            </tr>
+            <tr>
+                <th>排序</th>
+                <td><input name="cSort" type="number" max="99" maxlength="2" size="3" style="width:40px" placeholder="排序" /></td>
+            </tr>
+        </table>
+        <div class="dvupbtn">
+            <button id="bupupd" type="button">確認</button>
+        </div>
+    </form>
+</div>
 <div id="dvdata" class="data"></div>
 @section scripts {
     <script>
-        var hasin = "";
+        var hasin = "", upli = null;
         /*主項目資料*/
         function drupurl(func) {
             $.post('@Url.Content("~/Select/getUpUrl")')
@@ -73,10 +100,24 @@
         }
         /*取得主項目資料*/
         function getUp(d, isall) {
+            upli = d;
+            var th = ["主索引鍵,cId", "名稱,cName", "控制,cFolder", "顯示頁,cPage", "圖示,cIcon", "啟用,cEnable,bool", "排序,cSort,num"];
+            if (!isall) {
+                $("#drupurl").selecteAll({ "data": d, "value": "cId", "name": "cName" });
+                th.push("修改");
+            }
             $("#dvdata").tableData({
                 "title": "網頁主項目",
-                "th": ["主索引鍵,cId", "名稱,cName", "控制,cFolder", "顯示頁,cPage", "圖示,cIcon", "啟用,cEnable,bool", "排序,cSort,num", "修改"],
+                "th": th,
                 "hidden": ["cSeq"],
+                "setTr": function (itr) {
+                    if (th.some(function (v, i, a) { return v == "修改"; })) {
+                        itr.append($("<td/>").append($("<button/>").text("修改").click(function () {
+                            $("#dvupupd").dialog({ autoOpen: true, modal: true });
+                            $("#bupupd").click(function () { $("#dvupupd").unbind("dialog"); })
+                        })));
+                    }
+                },
                 "data": $.grep(d, function (a) {
                     var val = (isall == null ? false : isall) ? "" : $("#drupurl :selected").val();
                     return val == "" ? true : (a.cId == val);
@@ -92,7 +133,7 @@
                 var id = $(this).prop("id");
                 switch (id) {
                     case "aupsel": $("#bsubmit").click(); break;
-                    case "aupurl": drupurl(function (d) { getUp(d); }, true); break;
+                    case "aupurl": drupurl(function (d) { getUp(d, true); }); break;
                 }
                 $("#tb" + id.substring(1, id.length)).show();
             });

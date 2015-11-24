@@ -287,6 +287,62 @@ table td, table th {
     white-space: nowrap;
 }
 
+/* Sweep To Bottom */
+button {
+    border: 0;
+    font-family: 'cwTeXFangSong', serif;
+    padding: 2px 7px;
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    -webkit-transition-property: color;
+    transition-property: color;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+    button:before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #2098d1;
+        -webkit-transform: scaleY(0);
+        transform: scaleY(0);
+        -webkit-transform-origin: 50% 0;
+        transform-origin: 50% 0;
+        -webkit-transition-property: transform;
+        transition-property: transform;
+        -webkit-transition-duration: 0.3s;
+        transition-duration: 0.3s;
+        -webkit-transition-timing-function: ease-out;
+        transition-timing-function: ease-out;
+        -webkit-border-radius: 4px;
+        -moz-border-radius: 4px;
+        border-radius: 4px;
+    }
+
+    button:hover, button:focus, button:active {
+        color: white;
+    }
+
+        button:hover:before, button:focus:before, button:active:before {
+            -webkit-transform: scaleY(1);
+            transform: scaleY(1);
+        }
+
 a {
     text-decoration: none;
     color: #bebebe;
@@ -399,6 +455,64 @@ a {
             opacity: 0.8;
         }
 
+    /* Bounce To Bottom */
+    .searcher a {
+        padding: 24px 7px 5px 7px;
+        font-size: 18px;
+        font-weight: lighter;
+        display: inline-block;
+        vertical-align: middle;
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -moz-osx-font-smoothing: grayscale;
+        position: relative;
+        -webkit-transition-property: color;
+        transition-property: color;
+        -webkit-transition-duration: 0.5s;
+        transition-duration: 0.5s;
+    }
+
+        .searcher a:before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #c5c5c5;
+            opacity: 0.6;
+            -webkit-transform: scaleY(0);
+            transform: scaleY(0);
+            -webkit-transform-origin: 50% 0;
+            transform-origin: 50% 0;
+            -webkit-transition-property: transform;
+            transition-property: transform;
+            -webkit-transition-duration: 0.5s;
+            transition-duration: 0.5s;
+            -webkit-transition-timing-function: ease-out;
+            transition-timing-function: ease-out;
+        }
+
+        .searcher a:hover, .searcher a:focus, .searcher a:active {
+            color: white;
+        }
+
+            .searcher a:hover:before, .searcher a:focus:before, .searcher a:active:before {
+                -webkit-transform: scaleY(1);
+                transform: scaleY(1);
+                -webkit-transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
+                transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
+            }
+
+.hvr-bounce-to-bottom-selected {
+    background: #c5c5c5;
+    color: white;
+}
+
 /*資料呈現*/
 .data {
     padding-left: 100px;
@@ -427,116 +541,19 @@ a {
         background-color: #ccc;
         color: #374888;
     }
-/* Bounce To Bottom */
-.hvr-bounce-to-bottom {
-    padding: 24px 7px 5px 7px;
-    font-size: 18px;
-    font-weight: lighter;
-    display: inline-block;
-    vertical-align: middle;
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -moz-osx-font-smoothing: grayscale;
-    position: relative;
-    -webkit-transition-property: color;
-    transition-property: color;
-    -webkit-transition-duration: 0.5s;
-    transition-duration: 0.5s;
-}
 
-    .hvr-bounce-to-bottom:before {
-        content: "";
-        position: absolute;
-        z-index: -1;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: #c5c5c5;
-        opacity: 0.6;
-        -webkit-transform: scaleY(0);
-        transform: scaleY(0);
-        -webkit-transform-origin: 50% 0;
-        transform-origin: 50% 0;
-        -webkit-transition-property: transform;
-        transition-property: transform;
-        -webkit-transition-duration: 0.5s;
-        transition-duration: 0.5s;
-        -webkit-transition-timing-function: ease-out;
-        transition-timing-function: ease-out;
-    }
-
-    .hvr-bounce-to-bottom:hover, .hvr-bounce-to-bottom:focus, .hvr-bounce-to-bottom:active {
-        color: white;
-    }
-
-        .hvr-bounce-to-bottom:hover:before, .hvr-bounce-to-bottom:focus:before, .hvr-bounce-to-bottom:active:before {
-            -webkit-transform: scaleY(1);
-            transform: scaleY(1);
-            -webkit-transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
-            transition-timing-function: cubic-bezier(0.52, 1.64, 0.37, 0.66);
-        }
-
-.hvr-bounce-to-bottom-selected {
-    background: #c5c5c5;
-    color: white;
-}
-
-/* Ripple Out */
-@-webkit-keyframes hvr-ripple-out {
-    100% {
-        top: -12px;
-        right: -12px;
-        bottom: -12px;
-        left: -12px;
-        opacity: 0;
-    }
-}
-
-@keyframes hvr-ripple-out {
-    100% {
-        top: -12px;
-        right: -12px;
-        bottom: -12px;
-        left: -12px;
-        opacity: 0;
-    }
-}
-
-.hvr-ripple-out {
-    display: inline-block;
-    vertical-align: middle;
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -moz-osx-font-smoothing: grayscale;
-    position: relative;
-    border: none;
+.upd {
+    display: none;
     font-family: 'cwTeXFangSong', serif;
-    opacity: 0.7;
-    padding: 3px 10px;
-    margin-left: 15px;
-    cursor: pointer;
 }
 
-    .hvr-ripple-out:before {
-        content: '';
-        position: absolute;
-        border: #e1e1e1 solid 6px;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        -webkit-animation-duration: 0.5s;
-        animation-duration: 0.5s;
+    .upd .dvupbtn button, .upd td input, .upd td select {
+        font-family: 'cwTeXFangSong', serif;
     }
 
-    .hvr-ripple-out:hover:before, .hvr-ripple-out:focus:before, .hvr-ripple-out:active:before {
-        -webkit-animation-name: hvr-ripple-out;
-        animation-name: hvr-ripple-out;
+    .upd .dvupbtn {
+        text-align: center;
+        padding-top: 20px;
+        padding-bottom: 10px;
+        font-family: 'cwTeXFangSong', serif;
     }

@@ -58,9 +58,9 @@
                                     }
                                 } else { itr.append(td.append(e[iee[1]])); }
                             }
-                            /*客制資料內的tr*/
-                            if ($.isFunction(obj.setTr)) { obj.setTr(itr); }
                         });
+                        /*客制資料內的tr*/
+                        if ($.isFunction(obj.setTr)) { obj.setTr(itr); }
                         /*隱藏資料*/
                         if (!$.isEmptyObject(obj.hidden) && obj.hidden.length > 0) {
                             $(obj.hidden).each(function (ii, ee) {
@@ -97,25 +97,31 @@
 /*Prpo*/
 /*查詢項的a tab被選取用的class*/
 var aselect = "hvr-bounce-to-bottom-selected";
-try {
-    $(window).load(function () {
-        preloadersec = preloadersec <= 0 ? 500 : preloadersec;
-        $('.preloader__img').fadeOut(preloadersec);
-        setTimeout(function () { $('.preloader').addClass('active').delay(preloadersec * 2).fadeOut(preloadersec); }, (preloadersec * 2));
-        /*a tab選取時class更換*/
-        $(".searcher a").click(function () { $(".searcher a").removeClass(aselect); $(this).addClass(aselect); });
-        /*ajax 全域設定*/
-        $.ajaxSetup({
-            "beforeSend": function () {
-                var obj = $(".dvbtn");
-                obj.children().hide();
-                obj.append($("<img />", { id: "load", alt: "讀取中…", title: "讀取中…", src: "/Content/images/loading.gif" }));
+
+$(window).load(function () {
+    preloadersec = preloadersec <= 0 ? 500 : preloadersec;
+    $('.preloader__img').fadeOut(preloadersec);
+    setTimeout(function () { $('.preloader').addClass('active').delay(preloadersec * 2).fadeOut(preloadersec); }, (preloadersec * 2));
+    /*a tab選取時class更換*/
+    $(".searcher a").click(function () { $(".searcher a").removeClass(aselect); $(this).addClass(aselect); });
+    /*ajax 全域設定*/
+
+    $.ajaxSetup({
+        "complete": function (d) { $.unblockUI(); },
+        "error": function (d) { $("#debug").text(d.responseText); }
+    });
+    $(document).ajaxStart(function (h) {
+        $.blockUI({
+            css: {
+                border: 'none',
+                padding: '15px',
+                backgroundColor: '#fff',
+                '-webkit-border-radius': '10px',
+                '-moz-border-radius': '10px',
+                opacity: .5,
+                color: '#000'
             },
-            "complete": function (d) {
-                $("#load").remove();
-                $(".dvbtn").children().show();
-            },
-            "error": function (d) { $("#debug").text(d.responseText); }
+            "message": '<img alt="讀取中…" title="讀取中…" src="/Content/images/loading.gif">讀取中…</div>'
         });
     });
-} catch (e) { $.alert(e.description); }
+});
