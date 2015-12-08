@@ -34,22 +34,12 @@
 body {
     margin: 0;
 }
-    /*classic*/
+
     body.classic {
         position: relative;
         height: 100%;
         color: #555555;
         text-shadow: none;
-        /* General */
-        /* Sidebar */
-        /* Welcome */
-        /* Portfolio */
-        /* Team */
-        /* Contact */
-        /* Alert message */
-        /* reCAPTCHA custom styling */
-        /* Google maps */
-        /* Footer */
     }
 
         body.classic::after {

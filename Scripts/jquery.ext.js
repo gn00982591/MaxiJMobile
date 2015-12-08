@@ -60,7 +60,7 @@
                             }
                         });
                         /*客制資料內的tr*/
-                        if ($.isFunction(obj.setTr)) { obj.setTr(itr); }
+                        if ($.isFunction(obj.setTr)) { obj.setTr(itr, e); }
                         /*隱藏資料*/
                         if (!$.isEmptyObject(obj.hidden) && obj.hidden.length > 0) {
                             $(obj.hidden).each(function (ii, ee) {
@@ -90,7 +90,9 @@
         /*select設定「請選擇…」選項*/
         "selectePls": function (obj) { return $(this).selecteOpt($.extend({}, obj, { first: "請選擇…" })); },
         /*清除元件的val()的空白*/
-        "totrim": function () { return this.each(function () { var t = $(this); t.val($.trim(t.val().toUpperCase())); }); }
+        "totrim": function () { return this.each(function () { var t = $(this); t.val($.trim(t.val())); }); },
+        /*清除元件的val()的空白，並轉大寫*/
+        "totrimupper": function () { return this.each(function () { var t = $(this); t.val($.trim(t.val().toUpperCase())); }); }
     });
 })(jQuery);
 
@@ -105,7 +107,6 @@ $(window).load(function () {
     /*a tab選取時class更換*/
     $(".searcher a").click(function () { $(".searcher a").removeClass(aselect); $(this).addClass(aselect); });
     /*ajax 全域設定*/
-
     $.ajaxSetup({
         "complete": function (d) { $.unblockUI(); },
         "error": function (d) { $("#debug").text(d.responseText); }
