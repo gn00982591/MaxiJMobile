@@ -14,7 +14,7 @@
                     <th>名稱</th>
                     <td><input name="cName" type="text" maxlength="10" size="12" placeholder="名稱" /></td>
                     <th>控制</th>
-                    <td><select id="controllers" name="cFolder"></select></td>
+                    <td><select name="cFolder"></select></td>
                     <th>顯示頁</th>
                     <td><input name="cPage" type="text" maxlength="50" size="6" placeholder="顯示頁" /></td>
                 </tr>
@@ -28,7 +28,17 @@
             <table id="tburl" class="none">
                 <tr>
                     <th>主索引鍵</th>
-                    <td><input type="text" maxlength="10" size="12" placeholder="主項目" /></td>
+                    <td><input name="cId" type="text" maxlength="5" size="6" placeholder="主索引鍵" /></td>
+                    <th>名稱</th>
+                    <td><input name="cName" type="text" maxlength="10" size="12" placeholder="名稱" /></td>
+                    <th>控制</th>
+                    <td><select name="cFolder"></select></td>
+                    <th>顯示頁</th>
+                    <td><input name="cPage" type="text" maxlength="50" size="6" placeholder="顯示頁" /></td>
+                </tr>
+                <tr>
+                    <th>排序</th>
+                    <td colspan="7"><input name="cSort" type="number" max="99" maxlength="2" size="3" style="width:40px" placeholder="排序" /></td>
                 </tr>
             </table>
         </form>
@@ -101,61 +111,52 @@
 <div id="dvdata" class="data"></div>
 @section scripts {
     <script>
-        var hasin = "", upli = null;
-        /*主項目資料*/
-        function drupurl(func) {
-            $.post('@Url.Content("~/Select/getUpUrl")')
-                .done(function (d) {
-                    if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
-                    if ($.isFunction(func)) { func(d); }
-                });
-        }
+        var upli = null;
         /*增修主項目檢核*/
         function ckhUp(obj) {
             if ($.isEmptyObject(obj)) { $.alert("X0：發生錯誤，請核查程式!!!"); return; }
-            var ll = obj.ll.totrim().css("background-color", "white");
+            var ll = obj.frm.find("input:visible").totrim().css("background-color", "white");
             var lii = ll.filter(function (i) { return $(this).val() == ""; });
             if (lii.length) { lii.css("background-color", "yellow"); $.alert("X1：每個欄位皆為必填欄位!!!"); return; }
-            if (!/[A-Z0-9]{5}/.test(obj.cid)) { $.alert("X2：「主索引鍵」資料格式不正確!!!"); return; }
-            if (/[^a-zA-Z0-9]/.test(obj.cpage)) { $.alert("X3：「顯示頁」資料格式不正確!!!"); return; }
-            if (/[^0-9]/.test(obj.csort)) { $.alert("X6：「排序」資料格式不正確!!!"); return; }
-            obj.post(obj);
+            if (!/[A-Z0-9]{5}/.test(obj.frm.find('input[name="cId"]').val())) { $.alert("X2：「主索引鍵」資料格式不正確!!!"); return; }
+            if (/[^a-zA-Z0-9]/.test(obj.frm.find('input[name="cPage"]').val())) { $.alert("X3：「顯示頁」資料格式不正確!!!"); return; }
+            if (/[^0-9]/.test(obj.frm.find('input[name="cSort"]').val())) { $.alert("X6：「排序」資料格式不正確!!!"); return; }
+            $.post('@Url.Content("~/Select/getUrlSingle")', { "cid": obj.frm.find('input[name="cId"]').val(), "cupid": obj.frm.find('input[name="cUpId"]').val() })
+                .done(function (d) {
+                    if ($.isEmptyObject(d)) { $.alert("X4：查詢結果發生錯誤!!!"); return; }
+                    obj.post(d, obj);
+                });
         }
         /*取得主項目資料*/
-        function getUp(d, isall) {
-            upli = d;
-            var th = ["主索引鍵,cId", "名稱,cName", "控制,cFolder", "顯示頁,cPage", "圖示,cIcon", "啟用,cEnable,bool", "排序,cSort,num"],
-                thext = "修改";
-            isall = isall == null ? false : isall;
-            if (!isall) {
-                $.getCode({
-                    "url": '@Url.Content("~/Select/getUpCode")',
-                    "cupid": "01000",
-                    "done": function (dx) { $("#frmupupd select[name='cFolder']").selecteOpt({ "data": dx, "value": "cKey", "name": "cDesc" }); }
-                });
-                th.push(thext);
-            }
-            $("#dvdata").tableData({
-                "title": "網頁主項目",
-                "th": th,
-                "hidden": ["cSeq"],
-                "setTr": function (itr, e) {
-                    /*修改主項目*/
-                    if (th.some(function (v, i, a) { return v == thext; })) {
-                        itr.append($("<td/>").append($("<button/>").text(thext).click(function () {
+        function getUp(selectval) {
+            function innerGetUp(selectval, d) {
+                $("#dvdata").tableData({
+                    "title": "網頁主項目",
+                    "th": ["主索引鍵,cId", "名稱,cName", "控制,cFolder", "顯示頁,cPage", "圖示,cIcon", "啟用,cEnable,bool", "排序,cSort,num", "修改"],
+                    "hidden": ["cSeq"],
+                    "setTr": function (itr, e) {
+                        /*修改主項目*/
+                        itr.append($("<td/>").append($("<button/>").text("修改").click(function () {
                             var frm = $("#frmupupd");
                             for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
                             $("#cEnableY").prop("checked", e.cEnable);
                             $("#cEnableN").prop("checked", !e.cEnable);
                             $("#dvupupd").dialog({ autoOpen: true, modal: true });
                         })));
-                    }
-                },
-                "data": $.grep(d, function (a) {
-                    var val = $("#drupurl :selected").val();
-                    return (isall || val == "") ? true : (a.cId == val);
-                })
-            });
+                    },
+                    "data": $.grep(d, function (a) { return selectval == "" ? true : (a.cId == selectval); })
+                });
+            }
+            if (selectval == null || selectval == "") {
+                $.post('@Url.Content("~/Select/getUpUrl")')
+                    .done(function (d) {
+                        if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
+                        /*查修主項目的select*/
+                        $("#drupurl").selecteAll({ "data": d, "value": "cId", "name": "cName" });
+                        upli = d;
+                        innerGetUp("", d);
+                    });
+            } else { innerGetUp(selectval, upli); }
         }
 
         $(window).load(function () {
@@ -164,19 +165,19 @@
                 $(".searcher form table").hide();
                 $("#dvdata").empty();
                 var id = $(this).prop("id");
-                switch (id) {
-                    case "aupsel": $("#bsubmit").click(); break;
-                    case "aupurl": drupurl(function (d) { getUp(d, true); }); break;
-                }
-                $("#tb" + id.substring(1, id.length)).show();
-            });
-            /*新增次項目*/
-            $("#aupurl").click(function () {
                 $.getCode({
                     "url": '@Url.Content("~/Select/getUpCode")',
                     "cupid": "01000",
-                    "done": function (d) { $("#controllers").selecteOpt({ "data": d, "value": "cKey", "name": "cDesc" }); }
+                    "done": function (dx) { $("select[name='cFolder']").selecteOpt({ "data": dx, "value": "cKey", "name": "cDesc" }); }
                 });
+                switch (id) {
+                    case "aupsel": $("#bsubmit").click(); break;
+                    case "aupurl": getUp(); break;
+                    case "aurl":
+
+                        break;
+                }
+                $("#tb" + id.substring(1, id.length)).show();
             });
             /*主項目的輸入自動轉大寫*/
             $('input[name="cId"]').focusout(function () { $(this).totrimupper(); });
@@ -184,29 +185,19 @@
             $("#bupupd").click(function () {
                 var frm = $("#frmupupd");
                 ckhUp({
-                    ll: frm.find("input:visible"),
-                    cid: frm.find('input[name="cId"]').val(),
-                    cpage: frm.find('input[name="cPage"]').val(),
-                    csort: frm.find('input[name="cSort"]').val(),
-                    cupid: frm.find('input[name="cUpId"]').val(),
-                    cseq: frm.find('input[name="cSeq"]').val(),
-                    post: function (o) {
-                        $.post('@Url.Content("~/Select/getUrlSingle")', { "cid": o.cid, "cupid": o.cupid })
-                            .done(function (d) {
-                                if ($.isEmptyObject(d)) { $.alert("X4：查詢結果發生錯誤!!!"); return; }
-                                if (o.cseq != d.cSeq) { if (null != d.cUpId) { $.alert("X5：「主索引鍵」資料重複!!!"); return; } }
-
-                                for (var g in d) {
-                                    var ho = frm.find('[name="' + g + '"]');
-                                    if (ho.length) { d[g] = ho.val(); }
-                                }
-                                d.cEnable = frm.find('#cEnableY').is(":checked");
-                                $.post('@Url.Content("~/Insert/setUrlUpdate")', d)
-                                    .done(function (q) {
-                                        if (q.ok) { $("#aupsel").click(); }
-                                        $.alert("Y1：aupurl-修改" + (q.ok ? "成功" : "失敗") + "!!!");
-                                        $("#dvupupd").dialog("close");
-                                    });
+                    frm: frm,
+                    post: function (d, o) {
+                        if (frm.find('input[name="cSeq"]').val() != d.cSeq) { if (null != d.cUpId) { $.alert("X5：「主索引鍵」資料重複!!!"); return; } }
+                        for (var g in d) {
+                            var ho = frm.find('[name="' + g + '"]');
+                            if (ho.length) { d[g] = ho.val(); }
+                        }
+                        d.cEnable = frm.find('#cEnableY').is(":checked");
+                        $.post('@Url.Content("~/Insert/setUrlUpUpdate")', d)
+                            .done(function (q) {
+                                if (q.ok) { getUp(); }
+                                $.alert("Y1：修改" + (q.ok ? "成功" : "失敗") + "!!!");
+                                $("#dvupupd").dialog("close");
                             });
                     }
                 });
@@ -217,22 +208,15 @@
                 switch (nowin) {
                     case "aupurl":
                         /*新增主項目*/
+                        var frm = $("#frmupurl");
                         ckhUp({
-                            ll: $("#frmupurl input:visible"),
-                            cid: $('#frmupurl input[name="cId"]').val(),
-                            cpage: $('#frmupurl input[name="cPage"]').val(),
-                            csort: $('#frmupurl input[name="cSort"]').val(),
-                            cupid: $('#frmupurl input[name="cUpId"]').val(),
-                            post: function (o) {
-                                $.post('@Url.Content("~/Select/getUrlSingle")', { "cid": o.cid, "cupid": o.cupid })
+                            frm: frm,
+                            post: function (d, o) {
+                                if ("" != d.cId) { $.alert("X5：「主索引鍵」資料重複!!!"); return; }
+                                $.post('@Url.Content("~/Insert/setUrlInsert")', $("#frmupurl").serialize())
                                     .done(function (d) {
-                                        if ($.isEmptyObject(d)) { $.alert("X4：查詢結果發生錯誤!!!"); return; }
-                                        if ("" != d.cId) { $.alert("X5：「主索引鍵」資料重複!!!"); return; }
-                                        $.post('@Url.Content("~/Insert/setUrlInsert")', $("#frmupurl").serialize())
-                                            .done(function (d) {
-                                                if (d.ok) { o.ll.val(""); drupurl(function (g) { getUp(g); }); };
-                                                $.alert("Y1：aupurl-新增" + (d.ok ? "成功" : "失敗") + "!!!");
-                                            });
+                                        if (d.ok) { frm.find("input:visible").val(""); getUp(); }
+                                        $.alert("Y1：新增" + (d.ok ? "成功" : "失敗") + "!!!");
                                     });
                             }
                         });
@@ -244,15 +228,11 @@
                         /*查修次項目*/
                     case "aupsel":
                         /*查修主項目*/
-                        drupurl(function (d) {
-                            if (hasin != nowin) { $("#drupurl").selecteAll({ "data": d, "value": "cId", "name": "cName" }); }
-                            hasin = nowin;
-                            getUp(d);
-                        });
+                        getUp($("#drupurl :selected").val());
                         break;
                 }
             });
-            $("#bsubmit").click();
+            $("#aupsel").click();
         });
     </script>
 }
