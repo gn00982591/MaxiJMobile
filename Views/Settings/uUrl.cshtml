@@ -1,10 +1,10 @@
 ﻿@using MaxiJMobile.Models;
 <div class="searcher">
     <div>
-        <a href="#" id="aupurl">新增主項目</a>
-        <a href="#" id="aurl">新增次項目</a>
-        <a href="#" id="aupsel" class="hvr-bounce-to-bottom-selected">查修主項目</a>
-        <a href="#" id="asel">查修次項目</a>
+        <a href="#" id="aupurl">新增主項</a>
+        <a href="#" id="aurl">新增次項</a>
+        <a href="#" id="aupsel" class="hvr-bounce-to-bottom-selected">查修主項</a>
+        <a href="#" id="asel">查修次項</a>
         <form id="frmupurl">
             <input type="hidden" name="cUpId" value="00000" />
             <table id="tbupurl" class="none">
@@ -37,8 +37,10 @@
                     <td><input name="cPage" type="text" maxlength="50" size="6" placeholder="顯示頁" /></td>
                 </tr>
                 <tr>
+                    <th>上層索引鍵</th>
+                    <td><select name="cUpId"></select></td>
                     <th>排序</th>
-                    <td colspan="7"><input name="cSort" type="number" max="99" maxlength="2" size="3" style="width:40px" placeholder="排序" /></td>
+                    <td colspan="5"><input name="cSort" type="number" max="99" maxlength="2" size="3" style="width:40px" placeholder="排序" /></td>
                 </tr>
             </table>
         </form>
@@ -56,7 +58,9 @@
             <table id="tbsel" class="none">
                 <tr>
                     <th>主項目</th>
-                    <td><input type="text" maxlength="10" size="12" placeholder="主項目" /></td>
+                    <td>
+                        <select id="drsel"></select>
+                    </td>
                 </tr>
             </table>
         </form>
@@ -111,7 +115,7 @@
 <div id="dvdata" class="data"></div>
 @section scripts {
     <script>
-        var upli = null;
+        var upli = null, urli = null;
         /*增修主項目檢核*/
         function ckhUp(obj) {
             if ($.isEmptyObject(obj)) { $.alert("X0：發生錯誤，請核查程式!!!"); return; }
@@ -132,18 +136,18 @@
             function innerGetUp(selectval, d) {
                 $("#dvdata").tableData({
                     "title": "網頁主項目",
-                    "th": ["主索引鍵,cId", "名稱,cName", "控制,cFolder", "顯示頁,cPage", "圖示,cIcon", "啟用,cEnable,bool", "排序,cSort,num", "修改"],
+                    "th": [{ n: "主索引鍵", v: "cId" }, { n: "名稱", v: "cName" }, { n: "控制", v: "cFolder" }, { n: "顯示頁", v: "cPage" },
+                        { n: "圖示", v: "cIcon" }, { n: "啟用", v: "cEnable", t: "bool" }, { n: "排序", v: "cSort", t: "num" },
+                        {
+                            n: "修改", t: "btn", f: function (e) {
+                                var frm = $("#frmupupd");
+                                for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                $("#cEnableY").prop("checked", e.cEnable);
+                                $("#cEnableN").prop("checked", !e.cEnable);
+                                $("#dvupupd").dialog({ autoOpen: true, modal: true });
+                            }
+                        }],
                     "hidden": ["cSeq"],
-                    "setTr": function (itr, e) {
-                        /*修改主項目*/
-                        itr.append($("<td/>").append($("<button/>").text("修改").click(function () {
-                            var frm = $("#frmupupd");
-                            for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
-                            $("#cEnableY").prop("checked", e.cEnable);
-                            $("#cEnableN").prop("checked", !e.cEnable);
-                            $("#dvupupd").dialog({ autoOpen: true, modal: true });
-                        })));
-                    },
                     "data": $.grep(d, function (a) { return selectval == "" ? true : (a.cId == selectval); })
                 });
             }
@@ -153,12 +157,44 @@
                         if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
                         /*查修主項目的select*/
                         $("#drupurl").selecteAll({ "data": d, "value": "cId", "name": "cName" });
+                        $("#drsel").selecteAll({ "data": d, "value": "cId", "name": "cName" });
+                        /*查修主項目的select*/
+                        $("select[name='cUpId']").selecteOpt({ "data": d, "value": "cId", "name": "cName" });
                         upli = d;
                         innerGetUp("", d);
                     });
             } else { innerGetUp(selectval, upli); }
         }
-
+        /*取得次項目資料*/
+        function getUrl(selectval) {
+            function innerGetUrl(selectval, d) {
+                $("#dvdata").tableData({
+                    "title": "網頁次項目",
+                    "th": [{ n: "主索引鍵", v: "cId" }, { n: "名稱", v: "cName" }, { n: "控制", v: "cFolder" }, { n: "顯示頁", v: "cPage" },
+                        { n: "圖示", v: "cIcon" }, { n: "啟用", v: "cEnable", t: "bool" }, { n: "排序", v: "cSort", t: "num" }, { n: "上層索引鍵", v: "cUpId" },
+                        {
+                            n: "修改", t: "btn", f: function (e) {
+                                var frm = $("#frmupupd");
+                                for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                $("#cEnableY").prop("checked", e.cEnable);
+                                $("#cEnableN").prop("checked", !e.cEnable);
+                                $("#dvupupd").dialog({ autoOpen: true, modal: true });
+                            }
+                        }],
+                    "ths": { "k": "cUpId", "v": "00000", pk: "cId", fk: "cUpId", th: [{ n: "主索引鍵", v: "cId" }, { v: "cName" }, { n: "控制", v: "cFolder" }, { n: "啟用", v: "cEnable", t: "bool-lab" }] },
+                    "hidden": ["cSeq"],
+                    "data": $.grep(d, function (a) { return selectval == "" ? true : (a.cId == selectval || a.cUpId == selectval); })
+                });
+            }
+            if (selectval == null || selectval == "") {
+                $.post('@Url.Content("~/Select/getUrlAll")')
+                    .done(function (d) {
+                        if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
+                        urli = d;
+                        innerGetUrl("", d);
+                    });
+            } else { innerGetUrl(selectval, urli); }
+        }
         $(window).load(function () {
             /*換tab處理*/
             $(".searcher a").click(function () {
@@ -173,9 +209,8 @@
                 switch (id) {
                     case "aupsel": $("#bsubmit").click(); break;
                     case "aupurl": getUp(); break;
-                    case "aurl":
-
-                        break;
+                    case "asel":
+                    case "aurl": getUrl(); break;
                 }
                 $("#tb" + id.substring(1, id.length)).show();
             });
@@ -224,12 +259,8 @@
                     case "aurl":
                         /*新增次項目*/
                         break;
-                    case "asel":
-                        /*查修次項目*/
-                    case "aupsel":
-                        /*查修主項目*/
-                        getUp($("#drupurl :selected").val());
-                        break;
+                    case "asel": /*查修次項目*/ getUrl($("#drsel :selected").val()); break;
+                    case "aupsel": /*查修主項目*/ getUp($("#drupurl :selected").val()); break;
                 }
             });
             $("#aupsel").click();

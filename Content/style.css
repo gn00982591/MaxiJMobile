@@ -27,6 +27,10 @@
     text-align: right;
 }
 
+.w {
+    width: 100%;
+}
+
 .pointer {
     cursor: pointer;
 }

@@ -19,8 +19,18 @@
          *  Prop
          *      title   :string,    設定資料表的 Title
          *      data    :json,      資料陣列
-         *      th      :[],        文字，以「,」分隔，依序：抬頭文字，資料屬性，資料格式
+         *      th      :[],        資料內容處理
+         *          n   :string,    表格抬頭文字
+         *          v   :string,    資料內容的col
+         *          t   :string,    資料格式，或產生形式
+         *          f   :function,  資料格式內，對應指定產生形式而綁定執行功能
          *      hidden  :[],        隱藏資料
+         *      ths     :{},        資料內容分二階處理
+         *          k   :string,    第一層的主索引
+         *          v   :string,    主索引取出的數值    
+         *          pk  :string,    主索引
+         *          fk  :string,    對應主索引的外部索引
+         *          th  :[],        設定方式與 Prop 的 th 相同
          *  Func
          *      setTr   :客制資料內的tr
          */
@@ -34,41 +44,62 @@
                 var tb = $("<table/>", { "class": "main" }),
                 tr = $("<tr/>");
                 /*欄位名稱*/
-                $(obj.th).each(function (i, e) { tr.append("<th>" + (/,/.test(e) ? e.split(",")[0] : e) + "</th>"); });
+                $(obj.th).each(function (i, e) { tr.append("<th>" + e.n + "</th>"); });
                 tb.append(tr);
                 /*內容*/
                 if (obj.data.length <= 0 || $.isEmptyObject(obj.data)) { tb.append("<td colspan='" + obj.th.length + "' class='c'>無資料</td>"); }
                 else {
-                    $(obj.data).each(function (i, e) {
+                    function setLast(e, th, t) {
                         var itr = $("<tr/>");
-                        $(obj.th).each(function (ii, ee) {
-                            if (/,/.test(ee) && ee.split(",").length > 1) {
-                                var iee = ee.split(",");
-                                var td = $("<td>", { "name": iee[1] });
-                                if (ee.split(",").length > 2) {
-                                    switch (iee[2]) {
-                                        case "bool":
-                                            itr.append(td.addClass("c").append("<input type='checkbox' disabled='disabled' " + (e[iee[1]] ? "checked='checked'" : "") + " />"));
-                                            break;
-                                        case "num":
-                                            str = e[iee[1]].toString();
-                                            itr.append(td.addClass("r").append(str.replace(/\./.test(str) ? (/(\d{1,3})(?=(\d{3})+\.)/g) : (/(\d{1,3})(?=(\d{3})+$)/g), "$1,")));
-                                            break;
-                                        default: itr.append(td.append(e[iee[1]])); break;
-                                    }
-                                } else { itr.append(td.append(e[iee[1]])); }
+                        $(th).each(function (ii, ee) {
+                            var td = $("<td>", { "name": ee.v });
+                            switch (ee.t) {
+                                case "bool":
+                                    td.addClass("c").append("<input type='checkbox' disabled='disabled' " + (e[ee.v] ? "checked='checked'" : "") + " />");
+                                    break;
+                                case "bool-lab":
+                                    td.addClass("c").append("<input type='checkbox' disabled='disabled' " + (e[ee.v] ? "checked='checked'" : "") + " />" + ee.n);
+                                    break;
+                                case "num":
+                                    str = e[ee.v].toString();
+                                    td.addClass("r").append(str.replace(/\./.test(str) ? (/(\d{1,3})(?=(\d{3})+\.)/g) : (/(\d{1,3})(?=(\d{3})+$)/g), "$1,"));
+                                    break;
+                                case "btn":
+                                    td.addClass("c").append($("<button/>").text(ee.n).click(function () { if ($.isFunction(ee.f)) { ee.f(e); } }));
+                                    break;
+                                case "other":
+                                    //使用bind來綁定func
+                                    break;
+                                default: td.append(e[ee.v]); break;
                             }
+                            itr.append(td);
                         });
+                        switch (t) {
+                            case 1:
+                                itr.find("td").css({ "background-color": "#bdd8e4", "color": "#374888" });
+                                itr.find("td:last").prop("colspan", obj.th.length - obj.ths.th).addClass("l");
+                                break;
+                        }
                         /*客制資料內的tr*/
                         if ($.isFunction(obj.setTr)) { obj.setTr(itr, e); }
                         /*隱藏資料*/
                         if (!$.isEmptyObject(obj.hidden) && obj.hidden.length > 0) {
-                            $(obj.hidden).each(function (ii, ee) {
-                                itr.find("td:eq(0)").append("<input type='hidden' name='" + ee + "' value='" + e[ee] + "' />");
-                            });
+                            $(obj.hidden).each(function (ii, ee) { itr.find("td:eq(0)").append("<input type='hidden' name='" + ee + "' value='" + e[ee] + "' />"); });
                         }
-                        tb.append(itr);
-                    });
+                        return itr;
+                    }
+                    /*一般資料呈現*/
+                    if ($.isEmptyObject(obj.ths)) { $(obj.data).each(function (i, e) { tb.append(setLast(e, obj.th)); }); }
+                    else {
+                        $(obj.data).filter(function () { return this[obj.ths.k] == obj.ths.v; }).each(function (i, e) {
+                            /*有層階式呈現-第一層*/
+                            tb.append(setLast(e, obj.ths.th, 1));
+                            /*有層階式呈現-第二層*/
+                            $(obj.data).filter(function () { return e[obj.ths.pk] == this[obj.ths.fk] && this[obj.ths.fk] != obj.ths.v; }).each(function (x, y) {
+                                tb.append(setLast(y, obj.th));
+                            });
+                        });
+                    }
                 }
                 t.append(tb);
             });
