@@ -1,2 +1,190 @@
-﻿
-
+﻿@using MaxiJMobile.Models;
+<div class="searcher">
+    <div>
+        <a href="#" id="aup" class="hvr-bounce-to-bottom-selected">主項</a>
+        <a href="#" id="asec">次項</a>
+        <form id="frmup">
+            <table id="tbup">
+                <tr>
+                    <th>主項目</th>
+                    <td>
+                        <select id="drupurl"></select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <form id="frmsec">
+            <table id="tbsec" class="none">
+                <tr>
+                    <th>主項目</th>
+                    <td>
+                        <select id="drsel"></select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div class="dvbtn">
+            <button id="binsert" type="button">新增</button>
+            <button id="bsubmit" type="button">確認</button>
+            <button type="reset">取消</button>
+        </div>
+    </div>
+</div>
+<div id="dvupupd" class="upd" title="修改主項">
+    <form id="frmupupd">
+        <input type="hidden" name="cUpId" value="00000" />
+        <input type="hidden" name="cSeq" />
+        <table>
+            <tr>
+                <th>主索引鍵</th>
+                <td><input name="cId" type="text" maxlength="5" size="6" placeholder="主索引鍵" /></td>
+            </tr>
+            <tr>
+                <th>值</th>
+                <td><input name="cKey" type="text" maxlength="50" size="12" placeholder="值" /></td>
+            </tr>
+            <tr>
+                <th>描述</th>
+                <td><input name="cDesc" type="text" maxlength="100" size="12" placeholder="描述" /></td>
+            </tr>
+            <tr>
+                <th>排序</th>
+                <td><input name="cSort" type="number" max="99" maxlength="2" size="3" style="width:40px" placeholder="排序" /></td>
+            </tr>
+            <tr>
+                <th>啟用</th>
+                <td>
+                    <input type="radio" name="cEnable" id="cEnableY" checked="checked" value="1" />
+                    <label for="cEnableY">是</label>
+                    <input type="radio" name="cEnable" id="cEnableN" value="0" />
+                    <label for="cEnableN">否</label>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div class="dvupbtn">
+        <button id="bupupd" type="button">確認</button>
+    </div>
+</div>
+<div id="dvupd" class="upd" title="修改次項">
+    <form id="frmupd">
+        <input type="hidden" name="cSeq" />
+        <table>
+            <tr>
+                <th>主索引鍵</th>
+                <td><input name="cId" type="text" maxlength="5" size="6" placeholder="主索引鍵" /></td>
+            </tr>
+            <tr>
+                <th>上層索引鍵</th>
+                <td><select name="cUpId"></select></td>
+            </tr>
+            <tr>
+                <th>值</th>
+                <td><input name="cKey" type="text" maxlength="50" size="12" placeholder="值" /></td>
+            </tr>
+            <tr>
+                <th>描述</th>
+                <td><input name="cDesc" type="text" maxlength="100" size="12" placeholder="描述" /></td>
+            </tr>
+            <tr>
+                <th>排序</th>
+                <td><input name="cSort" type="number" max="99" maxlength="2" size="3" style="width:40px" placeholder="排序" /></td>
+            </tr>
+            <tr>
+                <th>啟用</th>
+                <td>
+                    <input type="radio" name="cEnable" id="cEnableY" checked="checked" value="1" />
+                    <label for="cEnableY">是</label>
+                    <input type="radio" name="cEnable" id="cEnableN" value="0" />
+                    <label for="cEnableN">否</label>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <div class="dvupbtn">
+        <button id="bupd" type="button">確認</button>
+    </div>
+</div>
+<div id="dvdata" class="data"></div>
+@section scripts {
+    <script>
+        var upli = null, urli = null;
+        /*取得主項目資料*/
+        function getUp(selectval) {
+            function innerGetUp(selectval, d) {
+                $("#dvdata").tableData({
+                    "title": "代碼主項目",
+                    "th": [{ n: "主索引鍵", v: "cId" }, { n: "值", v: "cKey" }, { n: "描述", v: "cDesc" }, { n: "啟用", v: "cEnable", t: "bool" }, { n: "排序", v: "cSort", t: "num" },
+                        {
+                            n: "修改", t: "btn", f: function (e) {
+                                var frm = $("#frmupupd");
+                                for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                $("#cEnableY").prop("checked", e.cEnable);
+                                $("#cEnableN").prop("checked", !e.cEnable);
+                                $("#dvupupd").dialog({ autoOpen: true, modal: true });
+                            }
+                        }],
+                    "hidden": ["cSeq"],
+                    "data": $.grep(d, function (a) { return selectval == "" ? true : (a.cId == selectval); })
+                });
+            }
+            if (selectval == null || selectval == "") {
+                $.post('@Url.Content("~/Select/getUpCodeAll")')
+                    .done(function (d) {
+                        if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
+                        /*查修主項目的select*/
+                        var od = { "data": d, "value": "cId", "name": "cKey" };
+                        $("#drupurl").selecteAll(od);
+                        $("#drsel").selecteAll(od);
+                        /*查修主項目的select*/
+                        $("select[name='cUpId']").selecteOpt(od);
+                        upli = d;
+                        innerGetUp("", d);
+                    });
+            } else { innerGetUp(selectval, upli); }
+        }
+        /*取得次項目資料*/
+        function getDetail(selectval) {
+            function innerGetUrl(selectval, d) {
+                $("#dvdata").tableData({
+                    "title": "網頁次項目",
+                    "th": [{ n: "主索引鍵", v: "cId" }, { n: "值", v: "cKey" }, { n: "描述", v: "cDesc" }, { n: "啟用", v: "cEnable", t: "bool" }, { n: "排序", v: "cSort", t: "num" }, { n: "上層索引鍵", v: "cUpId" },
+                        {
+                            n: "修改", t: "btn", f: function (e) {
+                                var frm = $("#frmupd");
+                                for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                $("#cEnableY").prop("checked", e.cEnable);
+                                $("#cEnableN").prop("checked", !e.cEnable);
+                                $("#dvupd").dialog({ autoOpen: true, modal: true });
+                            }
+                        }],
+                    "ths": { "k": "cUpId", "v": "00000", pk: "cId", fk: "cUpId", th: [{ n: "主索引鍵", v: "cId" }, { v: "cKey" }, { n: "啟用", v: "cEnable", t: "bool-lab" }] },
+                    "hidden": ["cSeq"],
+                    "data": $.grep(d, function (a) { return selectval == "" ? true : (a.cId == selectval || a.cUpId == selectval); })
+                });
+            }
+            if (selectval == null || selectval == "") {
+                $.post('@Url.Content("~/Select/getCodeAll")')
+                    .done(function (d) {
+                        if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
+                        urli = d;
+                        innerGetUrl("", d);
+                    });
+            } else { innerGetUrl(selectval, urli); }
+        }
+        $(window).load(function () {
+            /*換tab處理*/
+            $(".searcher a").click(function () {
+                $(".searcher form table").hide();
+                $("#dvdata").empty();
+                var id = $(this).prop("id");
+                switch (id) {
+                    case "aup": getUp(); break;
+                    case "asec": getDetail(); break;
+                }
+                $("#tb" + id.substring(1, id.length)).show();
+            });
+            $("#aup").click();
+        });
+    </script>
+}

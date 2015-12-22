@@ -68,7 +68,6 @@
             <button id="bsubmit" type="button">確認</button>
             <button type="reset">取消</button>
         </div>
-        <p></p>
     </div>
 </div>
 <div id="dvupupd" class="upd" title="修改主項">
@@ -198,10 +197,11 @@
                 .done(function (d) {
                     if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
                     /*查修主項目的select*/
-                    $("#drupurl").selecteAll({ "data": d, "value": "cId", "name": "cName" });
-                    $("#drsel").selecteAll({ "data": d, "value": "cId", "name": "cName" });
+                    var od = { "data": d, "value": "cId", "name": "cName" };
+                    $("#drupurl").selecteAll(od);
+                    $("#drsel").selecteAll(od);
                     /*查修主項目的select*/
-                    $("select[name='cUpId']").selecteOpt({ "data": d, "value": "cId", "name": "cName" });
+                    $("select[name='cUpId']").selecteOpt(od);
                     upli = d;
                     innerGetUp("", d);
                 });
