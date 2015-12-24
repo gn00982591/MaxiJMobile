@@ -38,16 +38,33 @@
                         {
                             using (var db = new db850b60b99a9145fea7aea52f005a5589Entities())
                             {
-                                if (name != "WAY")
+                                foreach (var i in db.tUrl.Where(s => s.cEnable && s.cUpId == "00000").OrderBy(s => s.cSort))
                                 {
-                                    foreach (var i in db.tUrl.Where(s => s.cEnable && s.cId == "00000").OrderBy(s => s.cSort))
-                                    {
-                                        <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
-                                    }
+                                    <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
                                 }
+                            }
+                        }
+                    }
+                </ul>
+            </section>
+            <section class="main-sidebar">
+                <ul class="main-menu">
+                    @{
+                        if (!(name == "WAY" && vname == "INDEX"))
+                        {
+                            using (var db = new db850b60b99a9145fea7aea52f005a5589Entities())
+                            {
                                 foreach (var i in db.tUrl.Where(s => s.cEnable && (name == "WAY" ? s.cUpId == "00000" : (s.cFolder == name && s.cPage.ToUpper() != "INDEX"))).OrderBy(s => s.cSort))
                                 {
                                     <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
+                                }
+                                if (vname != "WAY")
+                                {
+                                    <li class='menu-item scroll'><a href='#'></a></li>
+                                    foreach (var i in db.tUrl.Where(s => s.cEnable && s.cUpId == "00000").OrderBy(s => s.cSort))
+                                    {
+                                        <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
+                                    }
                                 }
                             }
                         }
@@ -59,7 +76,7 @@
             <div id="debug"></div>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2015122402</span>
+            &copy; Copy Right 2015 @(2015 <= DateTime.Now.Year ? "" : (" - " + DateTime.Now.Year.ToString())) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2015122403</span>
         </footer>
     </div>
     <script>

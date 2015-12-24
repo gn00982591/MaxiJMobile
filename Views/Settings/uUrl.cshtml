@@ -129,13 +129,13 @@
             $.post('@Url.Content("~/Select/getUrlSingle")', { "cid": obj.frm.find('input[name="cId"]').val(), "cupid": obj.frm.find('*[name="cUpId"]').val() })
                 .done(function (d) {
                     if ($.isEmptyObject(d)) { $.alert("X4：查詢結果發生錯誤!!!"); return; }
-                    //obj.post(d, obj);
+                    function ok(isok) { if (isok) { obj.t ? getUp() : getDetail(); } }
                     var cSeq = obj.frm.find("input[name='cSeq']").val();
                     if (cSeq === "") {
                         if ("" != d.cId) { $.alert("X7：「主索引鍵」資料重複!!!"); return; }
                         $.post('@Url.Content("~/Insert/setUrlInsert")', obj.frm.serialize())
                             .done(function (q) {
-                                if (q.ok) { obj.t ? getUp() : getDetail(); }
+                                ok(q.ok);
                                 $.alert("Y1：新增" + (q.ok ? "成功" : "失敗") + "!!!");
                             });
                     } else {
@@ -147,7 +147,7 @@
                         d.cEnable = obj.frm.find('#cEnableY').is(":checked");
                         $.post(obj.t ? '@Url.Content("~/Insert/setUrlUpUpdate")' : '@Url.Content("~/Insert/setUrlUpdate")', d)
                         .done(function (q) {
-                            if (q.ok) { obj.t ? getUp() : getDetail(); }
+                            ok(q.ok);
                             $.alert("Y1：修改" + (q.ok ? "成功" : "失敗") + "!!!");
                         });
                     }
@@ -185,7 +185,7 @@
                         /*查修主項目的select*/
                         $("select[name='cUpId']").selecteOpt(od);
                         upli = d;
-                        innerGetUp("", d);
+                        innerGetUp($("#drupurl :selected").val(), d);
                     });
             } else { innerGetUp(selectval, upli); }
         }
@@ -215,7 +215,7 @@
                     .done(function (d) {
                         if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
                         urli = d;
-                        innerGetUrl("", d);
+                        innerGetUrl($("#drsel :selected").val(), d);
                     });
             } else { innerGetUrl(selectval, urli); }
         }
@@ -243,7 +243,11 @@
                 $li.find("#cEnableY").prop("checked", true);
                 switch ($.getTabId()) {
                     case "aup": $("#dvupupd").dialog({ autoOpen: true, modal: true }); break;
-                    case "asec": $("#dvupd").dialog({ autoOpen: true, modal: true }); break;
+                    case "asec":
+                        var sv = $("#drsel :selected").val();
+                        if (sv != "") { $li.find("select[name='cUpId']").val(sv); }
+                        $("#dvupd").dialog({ autoOpen: true, modal: true });
+                        break;
                 }
             });
             /*確認*/

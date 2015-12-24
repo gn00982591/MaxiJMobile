@@ -509,7 +509,7 @@ a {
 
 /*資料呈現*/
 .data {
-    padding-left: 100px;
+    padding-left: 10%;
 }
 
     .data .title {
@@ -517,20 +517,24 @@ a {
         text-shadow: 3px 2px 2px #000;
     }
 
-    .data .main th, .data .main td {
-        padding: 3px 8px;
-        opacity: 0.8;
+    .data .main {
+        margin-bottom: 100px;
     }
 
-    .data .main th {
-        background-color: #df9968;
-        color: #000;
-    }
+        .data .main th, .data .main td {
+            padding: 3px 8px;
+            opacity: 0.8;
+        }
 
-    .data .main td {
-        background-color: #ccc;
-        color: #374888;
-    }
+        .data .main th {
+            background-color: #df9968;
+            color: #000;
+        }
+
+        .data .main td {
+            background-color: #ccc;
+            color: #374888;
+        }
 
 .upd {
     display: none;

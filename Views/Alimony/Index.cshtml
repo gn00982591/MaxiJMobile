@@ -1,1 +1,59 @@
-﻿
+﻿@using MaxiJMobile.Models;
+<div class="data">
+    <table>
+        <tr>
+            <td id="pie" style="opacity :0.8;margin-left:5%;"></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+        </tr>
+    </table>
+</div>
+@section scripts {
+    <script src="~/Scripts/highcharts/4.2.0/highcharts.js"></script>
+    <script src="~/Scripts/highcharts/4.2.0/themes/dark-unica.js"></script>
+    <script>
+        $(function () {
+            // Make monochrome colors and set them as default for all pies
+            Highcharts.getOptions().plotOptions.pie.colors = (function () {
+                var colors = [], base = Highcharts.getOptions().colors[0], i;
+                for (i = 0; i < 30; i += 1) { colors.push(Highcharts.Color(base).brighten((i - 3) / 7).get()); }
+                return colors;
+            }());
+            // Build the chart
+            $('#pie').highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: null,
+                    plotShadow: false,
+                    type: 'pie'
+                },
+                title: { text: 'Browser market, 2014' },
+                tooltip: { pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                            style: { color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black' }
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Brands',
+                    data: [
+                        { name: 'Microsoft Internet Explorer', y: 56.33 },
+                        { name: 'Chrome', y: 24.03 },
+                        { name: 'Firefox', y: 10.38 },
+                        { name: 'Safari', y: 4.77 },
+                        { name: 'Opera', y: 0.91 },
+                        { name: 'Proprietary or Undetectable', y: 0.2 }
+                    ]
+                }]
+            });
+        });
+    </script>
+}
