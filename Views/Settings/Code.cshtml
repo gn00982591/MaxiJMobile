@@ -133,7 +133,7 @@
                     .done(function (d) {
                         if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
                         /*查修主項目的select*/
-                        var od = { "data": d, "value": "cId", "name": "cKey" };
+                        var od = { "data": d, "value": "cId", "name": "cDesc" };
                         $("#drupurl").selecteAll(od);
                         $("#drsel").selecteAll(od);
                         /*查修主項目的select*/
