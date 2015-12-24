@@ -116,153 +116,153 @@
 <div id="dvdata" class="data"></div>
 @section scripts {
     <script>
-    var upli = null, urli = null;
-    /*增修主項目檢核*/
-    function ckhUp(obj) {
-        if ($.isEmptyObject(obj)) { $.alert("X0：發生錯誤，請核查程式!!!"); return; }
-        var ll = obj.frm.find("input:visible").totrim().css("background-color", "white");
-        var lii = ll.filter(function (i) { return $(this).val() == ""; });
-        if (lii.length) { lii.css("background-color", "yellow"); $.alert("X1：每個欄位皆為必填欄位!!!"); return; }
-        if (!/[A-Z0-9]{5}/.test(obj.frm.find('input[name="cId"]').val())) { $.alert("X2：「主索引鍵」資料格式不正確!!!"); return; }
-        if (/[^a-zA-Z0-9]/.test(obj.frm.find('input[name="cPage"]').val())) { $.alert("X3：「顯示頁」資料格式不正確!!!"); return; }
-        if (/[^0-9]/.test(obj.frm.find('input[name="cSort"]').val())) { $.alert("X6：「排序」資料格式不正確!!!"); return; }
-        $.post('@Url.Content("~/Select/getUrlSingle")', { "cid": obj.frm.find('input[name="cId"]').val(), "cupid": obj.frm.find('*[name="cUpId"]').val() })
-            .done(function (d) {
-                if ($.isEmptyObject(d)) { $.alert("X4：查詢結果發生錯誤!!!"); return; }
-                //obj.post(d, obj);
-                var cSeq = obj.frm.find("input[name='cSeq']").val();
-                if (cSeq === "") {
-                    if ("" != d.cId) { $.alert("X7：「主索引鍵」資料重複!!!"); return; }
-                    $.post('@Url.Content("~/Insert/setUrlInsert")', obj.frm.serialize())
+        var upli = null, urli = null;
+        /*增修主項目檢核*/
+        function ckhUp(obj) {
+            if ($.isEmptyObject(obj)) { $.alert("X0：發生錯誤，請核查程式!!!"); return; }
+            var ll = obj.frm.find("input:visible").totrim().css("background-color", "white");
+            var lii = ll.filter(function (i) { return $(this).val() == ""; });
+            if (lii.length) { lii.css("background-color", "yellow"); $.alert("X1：每個欄位皆為必填欄位!!!"); return; }
+            if (!/[A-Z0-9]{5}/.test(obj.frm.find('input[name="cId"]').val())) { $.alert("X2：「主索引鍵」資料格式不正確!!!"); return; }
+            if (/[^a-zA-Z0-9]/.test(obj.frm.find('input[name="cPage"]').val())) { $.alert("X3：「顯示頁」資料格式不正確!!!"); return; }
+            if (/[^0-9]/.test(obj.frm.find('input[name="cSort"]').val())) { $.alert("X6：「排序」資料格式不正確!!!"); return; }
+            $.post('@Url.Content("~/Select/getUrlSingle")', { "cid": obj.frm.find('input[name="cId"]').val(), "cupid": obj.frm.find('*[name="cUpId"]').val() })
+                .done(function (d) {
+                    if ($.isEmptyObject(d)) { $.alert("X4：查詢結果發生錯誤!!!"); return; }
+                    //obj.post(d, obj);
+                    var cSeq = obj.frm.find("input[name='cSeq']").val();
+                    if (cSeq === "") {
+                        if ("" != d.cId) { $.alert("X7：「主索引鍵」資料重複!!!"); return; }
+                        $.post('@Url.Content("~/Insert/setUrlInsert")', obj.frm.serialize())
+                            .done(function (q) {
+                                if (q.ok) { obj.t ? getUp() : getDetail(); }
+                                $.alert("Y1：新增" + (q.ok ? "成功" : "失敗") + "!!!");
+                            });
+                    } else {
+                        if (cSeq != d.cSeq) { if (null != d.cUpId) { $.alert("X8：「主索引鍵」資料重複!!!"); return; } }
+                        for (var g in d) {
+                            var ho = obj.frm.find('[name="' + g + '"]');
+                            if (ho.length) { d[g] = ho.val(); }
+                        }
+                        d.cEnable = obj.frm.find('#cEnableY').is(":checked");
+                        $.post(obj.t ? '@Url.Content("~/Insert/setUrlUpUpdate")' : '@Url.Content("~/Insert/setUrlUpdate")', d)
                         .done(function (q) {
                             if (q.ok) { obj.t ? getUp() : getDetail(); }
-                            $.alert("Y1：新增" + (q.ok ? "成功" : "失敗") + "!!!");
+                            $.alert("Y1：修改" + (q.ok ? "成功" : "失敗") + "!!!");
                         });
-                } else {
-                    if (cSeq != d.cSeq) { if (null != d.cUpId) { $.alert("X8：「主索引鍵」資料重複!!!"); return; } }
-                    for (var g in d) {
-                        var ho = obj.frm.find('[name="' + g + '"]');
-                        if (ho.length) { d[g] = ho.val(); }
                     }
-                    d.cEnable = obj.frm.find('#cEnableY').is(":checked");
-                    $.post(obj.t ? '@Url.Content("~/Insert/setUrlUpUpdate")' : '@Url.Content("~/Insert/setUrlUpdate")', d)
-                    .done(function (q) {
-                        if (q.ok) { obj.t ? getUp() : getDetail(); }
-                        $.alert("Y1：修改" + (q.ok ? "成功" : "失敗") + "!!!");
+                    obj.dialog.dialog("close");
+                });
+        }
+        /*取得主項目資料*/
+        function getUp(selectval) {
+            function innerGetUp(selectval, d) {
+                $("#dvdata").tableData({
+                    "title": "網頁主項目",
+                    "th": [{ n: "主索引鍵", v: "cId" }, { n: "名稱", v: "cName" }, { n: "控制", v: "cFolder" }, { n: "顯示頁", v: "cPage" },
+                        { n: "圖示", v: "cIcon" }, { n: "啟用", v: "cEnable", t: "bool" }, { n: "排序", v: "cSort", t: "num" },
+                        {
+                            n: "修改", t: "btn", f: function (e) {
+                                var frm = $("#frmupupd");
+                                for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                $("#cEnableY").prop("checked", e.cEnable);
+                                $("#cEnableN").prop("checked", !e.cEnable);
+                                $("#dvupupd").dialog({ autoOpen: true, modal: true });
+                            }
+                        }],
+                    "hidden": ["cSeq"],
+                    "data": $.grep(d, function (a) { return selectval == "" ? true : (a.cId == selectval); })
+                });
+            }
+            if (selectval == null || selectval == "") {
+                $.post('@Url.Content("~/Select/getUpUrl")')
+                    .done(function (d) {
+                        if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
+                        /*查修主項目的select*/
+                        var od = { "data": d, "value": "cId", "name": "cName" };
+                        $("#drupurl").selecteAll(od);
+                        $("#drsel").selecteAll(od);
+                        /*查修主項目的select*/
+                        $("select[name='cUpId']").selecteOpt(od);
+                        upli = d;
+                        innerGetUp("", d);
                     });
+            } else { innerGetUp(selectval, upli); }
+        }
+        /*取得次項目資料*/
+        function getDetail(selectval) {
+            function innerGetUrl(selectval, d) {
+                $("#dvdata").tableData({
+                    "title": "網頁次項目",
+                    "th": [{ n: "主索引鍵", v: "cId" }, { n: "名稱", v: "cName" }, { n: "控制", v: "cFolder" }, { n: "顯示頁", v: "cPage" },
+                        { n: "圖示", v: "cIcon" }, { n: "啟用", v: "cEnable", t: "bool" }, { n: "排序", v: "cSort", t: "num" }, { n: "上層索引鍵", v: "cUpId" },
+                        {
+                            n: "修改", t: "btn", f: function (e) {
+                                var frm = $("#frmupd");
+                                for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                $("#cEnableY").prop("checked", e.cEnable);
+                                $("#cEnableN").prop("checked", !e.cEnable);
+                                $("#dvupd").dialog({ autoOpen: true, modal: true });
+                            }
+                        }],
+                    "ths": { "k": "cUpId", "v": "00000", pk: "cId", fk: "cUpId", th: [{ v: "cId" }, { v: "cName" }, { n: "控制", v: "cFolder" }, { n: "啟用", v: "cEnable", t: "bool-lab" }] },
+                    "hidden": ["cSeq"],
+                    "data": $.grep(d, function (a) { return selectval == "" ? true : (a.cId == selectval || a.cUpId == selectval); })
+                });
+            }
+            if (selectval == null || selectval == "") {
+                $.post('@Url.Content("~/Select/getUrlAll")')
+                    .done(function (d) {
+                        if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
+                        urli = d;
+                        innerGetUrl("", d);
+                    });
+            } else { innerGetUrl(selectval, urli); }
+        }
+        $(window).load(function () {
+            /*換tab處理*/
+            $(".searcher a").click(function () {
+                $(".searcher form table").hide();
+                $("#dvdata").empty();
+                var id = $(this).prop("id");
+                switch (id) {
+                    case "aup": getUp(); break;
+                    case "asec": getDetail(); break;
                 }
-                obj.dialog.dialog("close");
+                $("#tb" + id.substring(1, id.length)).show();
             });
-    }
-    /*取得主項目資料*/
-    function getUp(selectval) {
-        function innerGetUp(selectval, d) {
-            $("#dvdata").tableData({
-                "title": "網頁主項目",
-                "th": [{ n: "主索引鍵", v: "cId" }, { n: "名稱", v: "cName" }, { n: "控制", v: "cFolder" }, { n: "顯示頁", v: "cPage" },
-                    { n: "圖示", v: "cIcon" }, { n: "啟用", v: "cEnable", t: "bool" }, { n: "排序", v: "cSort", t: "num" },
-                    {
-                        n: "修改", t: "btn", f: function (e) {
-                            var frm = $("#frmupupd");
-                            for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
-                            $("#cEnableY").prop("checked", e.cEnable);
-                            $("#cEnableN").prop("checked", !e.cEnable);
-                            $("#dvupupd").dialog({ autoOpen: true, modal: true });
-                        }
-                    }],
-                "hidden": ["cSeq"],
-                "data": $.grep(d, function (a) { return selectval == "" ? true : (a.cId == selectval); })
+            $("#aup").click();
+            /*主項目的輸入自動轉大寫*/
+            $('input[name="cId"]').focusout(function () { $(this).totrimupper(); });
+            /*新增*/
+            $("#binsert").click(function () {
+                var $li = $("#dvupd,#dvupupd");
+                $li.find("input[name='cSeq'],input[type='text'],input[type='number']").val("");
+                $li.find("select option:eq(0)").prop("selected", "selected");
+                $li.find("input[name='cEnable']").prop("checked", false);
+                $li.find("#cEnableY").prop("checked", true);
+                switch ($.getTabId()) {
+                    case "aup": $("#dvupupd").dialog({ autoOpen: true, modal: true }); break;
+                    case "asec": $("#dvupd").dialog({ autoOpen: true, modal: true }); break;
+                }
             });
-        }
-        if (selectval == null || selectval == "") {
-            $.post('@Url.Content("~/Select/getUpUrl")')
-                .done(function (d) {
-                    if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
-                    /*查修主項目的select*/
-                    var od = { "data": d, "value": "cId", "name": "cName" };
-                    $("#drupurl").selecteAll(od);
-                    $("#drsel").selecteAll(od);
-                    /*查修主項目的select*/
-                    $("select[name='cUpId']").selecteOpt(od);
-                    upli = d;
-                    innerGetUp("", d);
-                });
-        } else { innerGetUp(selectval, upli); }
-    }
-    /*取得次項目資料*/
-    function getDetail(selectval) {
-        function innerGetUrl(selectval, d) {
-            $("#dvdata").tableData({
-                "title": "網頁次項目",
-                "th": [{ n: "主索引鍵", v: "cId" }, { n: "名稱", v: "cName" }, { n: "控制", v: "cFolder" }, { n: "顯示頁", v: "cPage" },
-                    { n: "圖示", v: "cIcon" }, { n: "啟用", v: "cEnable", t: "bool" }, { n: "排序", v: "cSort", t: "num" }, { n: "上層索引鍵", v: "cUpId" },
-                    {
-                        n: "修改", t: "btn", f: function (e) {
-                            var frm = $("#frmupd");
-                            for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
-                            $("#cEnableY").prop("checked", e.cEnable);
-                            $("#cEnableN").prop("checked", !e.cEnable);
-                            $("#dvupd").dialog({ autoOpen: true, modal: true });
-                        }
-                    }],
-                "ths": { "k": "cUpId", "v": "00000", pk: "cId", fk: "cUpId", th: [{ n: "主索引鍵", v: "cId" }, { v: "cName" }, { n: "控制", v: "cFolder" }, { n: "啟用", v: "cEnable", t: "bool-lab" }] },
-                "hidden": ["cSeq"],
-                "data": $.grep(d, function (a) { return selectval == "" ? true : (a.cId == selectval || a.cUpId == selectval); })
+            /*確認*/
+            $("#bsubmit").click(function () {
+                switch ($.getTabId()) {
+                    case "aup": getUp($("#drupurl :selected").val()); break;
+                    case "asec": getDetail($("#drsel :selected").val()); break;
+                }
             });
-        }
-        if (selectval == null || selectval == "") {
-            $.post('@Url.Content("~/Select/getUrlAll")')
-                .done(function (d) {
-                    if ($.isEmptyObject(d) && d.length <= 0) { $.alert("EX01：無主項目資料!!!"); }
-                    urli = d;
-                    innerGetUrl("", d);
-                });
-        } else { innerGetUrl(selectval, urli); }
-    }
-    $(window).load(function () {
-        /*換tab處理*/
-        $(".searcher a").click(function () {
-            $(".searcher form table").hide();
-            $("#dvdata").empty();
-            var id = $(this).prop("id");
-            switch (id) {
-                case "aup": getUp(); break;
-                case "asec": getDetail(); break;
-            }
-            $("#tb" + id.substring(1, id.length)).show();
+            /*主項新增確認*/
+            $("#bupupd").click(function () { ckhUp({ frm: $("#frmupupd"), t: true, dialog: $("#dvupupd") }); });
+            /*次項新增確認*/
+            $("#bupd").click(function () { ckhUp({ frm: $("#frmupd"), t: false, dialog: $("#dvupd") }); });
+            /*取得控制代碼*/
+            $.getCode({
+                "url": '@Url.Content("~/Select/getUpCode")',
+                "cupid": "01000",
+                "done": function (dx) { $("select[name='cFolder']").selecteOpt({ "data": dx, "value": "cKey", "name": "cDesc" }); }
+            });
         });
-        $("#aup").click();
-        /*主項目的輸入自動轉大寫*/
-        $('input[name="cId"]').focusout(function () { $(this).totrimupper(); });
-        /*新增*/
-        $("#binsert").click(function () {
-            var $li = $("#dvupd,#dvupupd");
-            $li.find("input[name='cSeq'],input[type='text'],input[type='number']").val("");
-            $li.find("select option:eq(0)").prop("selected", "selected");
-            $li.find("input[name='cEnable']").prop("checked", false);
-            $li.find("#cEnableY").prop("checked", true);
-            switch ($.getTabId()) {
-                case "aup": $("#dvupupd").dialog({ autoOpen: true, modal: true }); break;
-                case "asec": $("#dvupd").dialog({ autoOpen: true, modal: true }); break;
-            }
-        });
-        /*確認*/
-        $("#bsubmit").click(function () {
-            switch ($.getTabId()) {
-                case "aup": getUp($("#drupurl :selected").val()); break;
-                case "asec": getDetail($("#drsel :selected").val()); break;
-            }
-        });
-        /*主項新增確認*/
-        $("#bupupd").click(function () { ckhUp({ frm: $("#frmupupd"), t: true, dialog: $("#dvupupd") }); });
-        /*次項新增確認*/
-        $("#bupd").click(function () { ckhUp({ frm: $("#frmupd"), t: false, dialog: $("#dvupd") }); });
-        /*取得控制代碼*/
-        $.getCode({
-            "url": '@Url.Content("~/Select/getUpCode")',
-            "cupid": "01000",
-            "done": function (dx) { $("select[name='cFolder']").selecteOpt({ "data": dx, "value": "cKey", "name": "cDesc" }); }
-        });
-    });
     </script>
 }

@@ -158,7 +158,7 @@
                                 $("#dvupd").dialog({ autoOpen: true, modal: true });
                             }
                         }],
-                    "ths": { "k": "cUpId", "v": "00000", pk: "cId", fk: "cUpId", th: [{ n: "主索引鍵", v: "cId" }, { v: "cKey" }, { n: "啟用", v: "cEnable", t: "bool-lab" }] },
+                    "ths": { "k": "cUpId", "v": "00000", pk: "cId", fk: "cUpId", th: [{ v: "cId" }, { v: "cKey" }, { v: "cDesc" }, { n: "啟用", v: "cEnable", t: "bool-lab" }] },
                     "hidden": ["cSeq"],
                     "data": $.grep(d, function (a) { return selectval == "" ? true : (a.cId == selectval || a.cUpId == selectval); })
                 });
