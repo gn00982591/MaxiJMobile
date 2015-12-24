@@ -30,7 +30,7 @@
         </div>
     </div>
 </div>
-<div id="dvupupd" class="upd" title="修改主項">
+<div id="dvupupd" class="upd" title="主項">
     <form id="frmupupd">
         <input type="hidden" name="cUpId" value="00000" />
         <input type="hidden" name="cSeq" />
@@ -54,9 +54,9 @@
             <tr>
                 <th>啟用</th>
                 <td>
-                    <input type="radio" name="cEnable" id="cEnableY" checked="checked" value="1" />
+                    <input type="radio" name="cEnable" id="cEnableY" checked="checked" value="true" />
                     <label for="cEnableY">是</label>
-                    <input type="radio" name="cEnable" id="cEnableN" value="0" />
+                    <input type="radio" name="cEnable" id="cEnableN" value="false" />
                     <label for="cEnableN">否</label>
                 </td>
             </tr>
@@ -66,7 +66,7 @@
         <button id="bupupd" type="button">確認</button>
     </div>
 </div>
-<div id="dvupd" class="upd" title="修改次項">
+<div id="dvupd" class="upd" title="次項">
     <form id="frmupd">
         <input type="hidden" name="cSeq" />
         <table>
@@ -147,7 +147,7 @@
         function getDetail(selectval) {
             function innerGetUrl(selectval, d) {
                 $("#dvdata").tableData({
-                    "title": "網頁次項目",
+                    "title": "代碼次項目",
                     "th": [{ n: "主索引鍵", v: "cId" }, { n: "值", v: "cKey" }, { n: "描述", v: "cDesc" }, { n: "啟用", v: "cEnable", t: "bool" }, { n: "排序", v: "cSort", t: "num" }, { n: "上層索引鍵", v: "cUpId" },
                         {
                             n: "修改", t: "btn", f: function (e) {
@@ -172,6 +172,41 @@
                     });
             } else { innerGetUrl(selectval, urli); }
         }
+        /*檢核*/
+        function ckhUp(obj) {
+            if ($.isEmptyObject(obj)) { $.alert("X0：發生錯誤，請核查程式!!!"); return; }
+            var ll = obj.frm.find("input:visible").totrim().css("background-color", "white");
+            var lii = ll.filter(function (i) { return $(this).val() == ""; });
+            if (lii.length) { lii.css("background-color", "yellow"); $.alert("X1：每個欄位皆為必填欄位!!!"); return; }
+            if (!/[A-Z0-9]{5}/.test(obj.frm.find('input[name="cId"]').val())) { $.alert("X2：「主索引鍵」資料格式不正確!!!"); return; }
+            if (/[^0-9]/.test(obj.frm.find('input[name="cSort"]').val())) { $.alert("X6：「排序」資料格式不正確!!!"); return; }
+            $.post('@Url.Content("~/Select/getCodeSingle")', { "cid": obj.frm.find('input[name="cId"]').val(), "cupid": obj.frm.find('*[name="cUpId"]').val() })
+                .done(function (d) {
+                    if ($.isEmptyObject(d)) { $.alert("X4：查詢結果發生錯誤!!!"); return; }
+                    var cSeq = obj.frm.find("input[name='cSeq']").val();
+                    if (cSeq === "") {
+                        if ("" != d.cId) { $.alert("X7：「主索引鍵」資料重複!!!"); return; }
+                        $.post('@Url.Content("~/Insert/setCodeInsert")', obj.frm.serialize())
+                            .done(function (q) {
+                                if (q.ok) { obj.t ? getUp() : getDetail(); }
+                                $.alert("Y1：新增" + (q.ok ? "成功" : "失敗") + "!!!");
+                            });
+                    } else {
+                        if (cSeq != d.cSeq) { if (null != d.cUpId) { $.alert("X8：「主索引鍵」資料重複!!!"); return; } }
+                        for (var g in d) {
+                            var ho = obj.frm.find('[name="' + g + '"]');
+                            if (ho.length) { d[g] = ho.val(); }
+                        }
+                        d.cEnable = obj.frm.find('#cEnableY').is(":checked");
+                        $.post(obj.t ? '@Url.Content("~/Insert/setCodeUpUpdate")' : '@Url.Content("~/Insert/setCodeUpdate")', d)
+                        .done(function (q) {
+                            if (q.ok) { obj.t ? getUp() : getDetail(); }
+                            $.alert("Y1：修改" + (q.ok ? "成功" : "失敗") + "!!!");
+                        });
+                    }
+                    obj.dialog.dialog("close");
+                });
+        }
         $(window).load(function () {
             /*換tab處理*/
             $(".searcher a").click(function () {
@@ -185,6 +220,31 @@
                 $("#tb" + id.substring(1, id.length)).show();
             });
             $("#aup").click();
+            /*主項目的輸入自動轉大寫*/
+            $('input[name="cId"]').focusout(function () { $(this).totrimupper(); });
+            /*新增*/
+            $("#binsert").click(function () {
+                var $li = $("#dvupd,#dvupupd");
+                $li.find("input[name='cSeq'],input[type='text'],input[type='number']").val("");
+                $li.find("select option:eq(0)").prop("selected", "selected");
+                $li.find("input[name='cEnable']").prop("checked", false);
+                $li.find("#cEnableY").prop("checked", true);
+                switch ($.getTabId()) {
+                    case "aup": $("#dvupupd").dialog({ autoOpen: true, modal: true }); break;
+                    case "asec": $("#dvupd").dialog({ autoOpen: true, modal: true }); break;
+                }
+            });
+            /*確認*/
+            $("#bsubmit").click(function () {
+                switch ($.getTabId()) {
+                    case "aup": getUp($("#drupurl :selected").val()); break;
+                    case "asec": getDetail($("#drsel :selected").val()); break;
+                }
+            });
+            /*主項新增確認*/
+            $("#bupupd").click(function () { ckhUp({ frm: $("#frmupupd"), t: true, dialog: $("#dvupupd") }); });
+            /*次項新增確認*/
+            $("#bupd").click(function () { ckhUp({ frm: $("#frmupd"), t: false, dialog: $("#dvupd") }); });
         });
     </script>
 }

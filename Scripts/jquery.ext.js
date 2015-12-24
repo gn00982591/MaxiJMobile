@@ -11,8 +11,10 @@
                 .done(function (d) {
                     if ($.isEmptyObject(d) && d.length <= 0) { $.alert("X4：getCode-無明細資料!!!"); }
                     obj.done(d);
-                });
-        }
+                });            
+        },
+        /*取得正在運作的子頁tab*/
+        "getTabId": function () { return $(".searcher a").filter(function () { return $(this).hasClass(aselect); }).prop("id"); }
     });
     $.fn.extend({
         /*table設定資料內容
@@ -76,7 +78,7 @@
                         });
                         switch (t) {
                             case 1:
-                                itr.find("td").css({ "background-color": "#bdd8e4", "color": "#374888" });
+                                itr.find("td").css({ "background-color": "#7495f4", "color": "#fff" });
                                 itr.find("td:last").prop("colspan", obj.th.length - obj.ths.th).addClass("l");
                                 break;
                         }

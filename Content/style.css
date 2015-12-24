@@ -528,10 +528,6 @@ a {
     }
 
     .data .main td {
-        background-color: #7495f4;
-    }
-
-    .data .main tr:nth-child(odd) td {
         background-color: #ccc;
         color: #374888;
     }
