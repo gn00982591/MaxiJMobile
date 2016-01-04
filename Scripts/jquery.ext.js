@@ -1,17 +1,26 @@
 ﻿(function ($, undefined) {
     $.extend({
         /*跳出訊息*/
-        "alert": function (str) { $("#dialog").text(str).dialog({ autoOpen: true, modal: true }); },
+        "alert": function (str) { $("#dialog").text(str).dialogopen(); },
         /*取得tCode的明細*/
         "getCode": function (obj) {
             if ($.isEmptyObject(obj)) { $.alert("X1：getCode-obj不存在!!!"); return; }
-            if (obj.url == "") { $.alert("X2：getCode-網址資料(objt.url)不存在!!!"); return; }
             if (!$.isFunction(obj.done)) { $.alert("X3：getCode-網址資料(objt.done)不存在!!!"); return; }
-            $.post(obj.url, { "cupid": obj.cupid })
+            $.post("/Select/getCodeEnable", { "cupid": obj.cupid })
                 .done(function (d) {
                     if ($.isEmptyObject(d) && d.length <= 0) { $.alert("X4：getCode-無明細資料!!!"); }
                     obj.done(d);
                 });            
+        },
+        /*input不可空白*/
+        "isNoneEmpty": function (o) {
+            var lii = o.totrim().css("background-color", "white")
+                .filter(function (i) { return $(this).val() == ""; });
+            if (lii.length) {
+                lii.css("background-color", "yellow");
+                $.alert("X1：每個欄位皆為必填欄位!!!"); return true;
+            }
+            return false;
         },
         /*取得正在運作的子頁tab*/
         "getTabId": function () { return $(".searcher a").filter(function () { return $(this).hasClass(aselect); }).prop("id"); }
@@ -69,6 +78,9 @@
                                 case "btn":
                                     td.addClass("c").append($("<button/>").text(ee.n).click(function () { if ($.isFunction(ee.f)) { ee.f(e); } }));
                                     break;
+                                case "txt-c":
+                                    td.addClass("c").append(e[ee.v]); break;
+                                    break;
                                 case "other":
                                     //使用bind來綁定func
                                     break;
@@ -93,18 +105,58 @@
                     /*一般資料呈現*/
                     if ($.isEmptyObject(obj.ths)) { $(obj.data).each(function (i, e) { tb.append(setLast(e, obj.th)); }); }
                     else {
-                        $(obj.data).filter(function () { return this[obj.ths.k] == obj.ths.v; }).each(function (i, e) {
-                            /*有層階式呈現-第一層*/
-                            tb.append(setLast(e, obj.ths.th, 1));
-                            /*有層階式呈現-第二層*/
-                            $(obj.data).filter(function () { return e[obj.ths.pk] == this[obj.ths.fk] && this[obj.ths.fk] != obj.ths.v; }).each(function (x, y) {
-                                tb.append(setLast(y, obj.th));
+                        if ($.isEmptyObject(obj.ths.v)) {
+                            var kli = [];
+                            for (var i in obj.data) {
+                                if ($.inArray(obj.data[i][obj.ths.k], kli) < 0) { kli.push(obj.data[i]); }
+                            }
+                            for (var i in kli) {
+                                tb.append(setLast(kli[i], obj.ths.th, 1));
+                                $(obj.data).filter(function () { return kli[i][obj.ths.k] == this[obj.ths.k]; }).each(function (x, y) {
+                                    tb.append(setLast(y, obj.th));
+                                });
+                            }
+                        } else {
+                            $(obj.data).filter(function () { return this[obj.ths.k] == obj.ths.v; }).each(function (i, e) {
+                                /*有層階式呈現-第一層*/
+                                tb.append(setLast(e, obj.ths.th, 1));
+                                /*有層階式呈現-第二層*/
+                                $(obj.data).filter(function () { return e[obj.ths.pk] == this[obj.ths.fk] && this[obj.ths.fk] != obj.ths.v; }).each(function (x, y) {
+                                    tb.append(setLast(y, obj.th));
+                                });
                             });
-                        });
+                        }
                     }
                 }
-                t.append(tb);
+                t.css("vertical-align", "top").append(tb);
             });
+        },
+        /*dialog*/
+        "dialogopen": function () { $(this).dialog({ autoOpen: true, modal: true, width: "auto" }); return $(this);},
+        /*datepicker*/
+        "datepickeropen": function () {
+            $(this).datepicker({
+                showOtherMonths: true,
+                selectOtherMonths: true,
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: "yy/mm/dd"
+            });
+            return $(this);
+        },
+        /*select tCode*/
+        "selecteCode": function (dx) { $(this).selecteOpt({ "data": dx, "value": "cKey", "name": "cDesc" }); return $(this); },
+        /*select設定選項*/
+        "getCodeOpt": function (obj) {
+            var $t = $(this).empty();
+            $.getCode({
+                "cupid": obj.cupid,
+                "done": function (dx) {
+                    $t.selecteCode(dx);
+                    if ($.isFunction(obj.done)) { obj.done(dx);}
+                }
+            });
+            return $t;
         },
         /*select設定選項*/
         "selecteOpt": function (obj) {

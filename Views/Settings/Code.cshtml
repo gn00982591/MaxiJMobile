@@ -49,7 +49,7 @@
             </tr>
             <tr>
                 <th>排序</th>
-                <td><input name="cSort" type="number" max="99" maxlength="2" size="3" style="width:40px" placeholder="排序" /></td>
+                <td><input name="cSort" type="number" max="99" maxlength="2" size="3" placeholder="排序" /></td>
             </tr>
             <tr>
                 <th>啟用</th>
@@ -88,7 +88,7 @@
             </tr>
             <tr>
                 <th>排序</th>
-                <td><input name="cSort" type="number" max="99" maxlength="2" size="3" style="width:40px" placeholder="排序" /></td>
+                <td><input name="cSort" type="number" max="99" maxlength="2" size="3" placeholder="排序" /></td>
             </tr>
             <tr>
                 <th>啟用</th>
@@ -108,6 +108,49 @@
 <div id="dvdata" class="data"></div>
 @section scripts {
     <script>
+        $(window).load(function () {
+            /*換tab處理*/
+            $(".searcher a").click(function () {
+                $(".searcher form table").hide();
+                $("#dvdata").empty();
+                var id = $(this).prop("id");
+                switch (id) {
+                    case "aup": getUp(); break;
+                    case "asec": getDetail(); break;
+                }
+                $("#tb" + id.substring(1, id.length)).show();
+            });
+            $("#aup").click();
+            /*主項目的輸入自動轉大寫*/
+            $('input[name="cId"]').focusout(function () { $(this).totrimupper(); });
+            /*新增*/
+            $("#binsert").click(function () {
+                var $li = $("#dvupd,#dvupupd");
+                $li.find("input[name='cSeq'],input[type='text'],input[type='number']").val("");
+                $li.find("select option:eq(0)").prop("selected", "selected");
+                $li.find("input[name='cEnable']").prop("checked", false);
+                $li.find("#cEnableY").prop("checked", true);
+                switch ($.getTabId()) {
+                    case "aup": $("#dvupupd").dialogopen(); break;
+                    case "asec":
+                        var sv = $("#drsel :selected").val();
+                        if (sv != "") { $li.find("select[name='cUpId']").val(sv); }
+                        $("#dvupd").dialogopen();
+                        break;
+                }
+            });
+            /*確認*/
+            $("#bsubmit").click(function () {
+                switch ($.getTabId()) {
+                    case "aup": getUp($("#drupurl :selected").val()); break;
+                    case "asec": getDetail($("#drsel :selected").val()); break;
+                }
+            });
+            /*主項新增確認*/
+            $("#bupupd").click(function () { ckhUp({ frm: $("#frmupupd"), t: true, dialog: $("#dvupupd") }); });
+            /*次項新增確認*/
+            $("#bupd").click(function () { ckhUp({ frm: $("#frmupd"), t: false, dialog: $("#dvupd") }); });
+        });
         var upli = null, urli = null;
         /*取得主項目資料*/
         function getUp(selectval) {
@@ -121,7 +164,7 @@
                                 for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
                                 $("#cEnableY").prop("checked", e.cEnable);
                                 $("#cEnableN").prop("checked", !e.cEnable);
-                                $("#dvupupd").dialog({ autoOpen: true, modal: true });
+                                $("#dvupupd").dialogopen();
                             }
                         }],
                     "hidden": ["cSeq"],
@@ -155,7 +198,7 @@
                                 for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
                                 $("#cEnableY").prop("checked", e.cEnable);
                                 $("#cEnableN").prop("checked", !e.cEnable);
-                                $("#dvupd").dialog({ autoOpen: true, modal: true });
+                                $("#dvupd").dialogopen();
                             }
                         }],
                     "ths": { "k": "cUpId", "v": "00000", pk: "cId", fk: "cUpId", th: [{ v: "cId" }, { v: "cKey" }, { v: "cDesc" }, { n: "啟用", v: "cEnable", t: "bool-lab" }] },
@@ -175,9 +218,7 @@
         /*檢核*/
         function ckhUp(obj) {
             if ($.isEmptyObject(obj)) { $.alert("X0：發生錯誤，請核查程式!!!"); return; }
-            var ll = obj.frm.find("input:visible").totrim().css("background-color", "white");
-            var lii = ll.filter(function (i) { return $(this).val() == ""; });
-            if (lii.length) { lii.css("background-color", "yellow"); $.alert("X1：每個欄位皆為必填欄位!!!"); return; }
+            if ($.isNoneEmpty(obj.frm.find("input:visible"))) { return;}
             if (!/[A-Z0-9]{5}/.test(obj.frm.find('input[name="cId"]').val())) { $.alert("X2：「主索引鍵」資料格式不正確!!!"); return; }
             if (/[^0-9]/.test(obj.frm.find('input[name="cSort"]').val())) { $.alert("X6：「排序」資料格式不正確!!!"); return; }
             $.post('@Url.Content("~/Select/getCodeSingle")', { "cid": obj.frm.find('input[name="cId"]').val(), "cupid": obj.frm.find('*[name="cUpId"]').val() })
@@ -208,48 +249,5 @@
                     obj.dialog.dialog("close");
                 });
         }
-        $(window).load(function () {
-            /*換tab處理*/
-            $(".searcher a").click(function () {
-                $(".searcher form table").hide();
-                $("#dvdata").empty();
-                var id = $(this).prop("id");
-                switch (id) {
-                    case "aup": getUp(); break;
-                    case "asec": getDetail(); break;
-                }
-                $("#tb" + id.substring(1, id.length)).show();
-            });
-            $("#aup").click();
-            /*主項目的輸入自動轉大寫*/
-            $('input[name="cId"]').focusout(function () { $(this).totrimupper(); });
-            /*新增*/
-            $("#binsert").click(function () {
-                var $li = $("#dvupd,#dvupupd");
-                $li.find("input[name='cSeq'],input[type='text'],input[type='number']").val("");
-                $li.find("select option:eq(0)").prop("selected", "selected");
-                $li.find("input[name='cEnable']").prop("checked", false);
-                $li.find("#cEnableY").prop("checked", true);
-                switch ($.getTabId()) {
-                    case "aup": $("#dvupupd").dialog({ autoOpen: true, modal: true }); break;
-                    case "asec":
-                        var sv = $("#drsel :selected").val();
-                        if (sv != "") { $li.find("select[name='cUpId']").val(sv); }
-                        $("#dvupd").dialog({ autoOpen: true, modal: true });
-                        break;
-                }
-            });
-            /*確認*/
-            $("#bsubmit").click(function () {
-                switch ($.getTabId()) {
-                    case "aup": getUp($("#drupurl :selected").val()); break;
-                    case "asec": getDetail($("#drsel :selected").val()); break;
-                }
-            });
-            /*主項新增確認*/
-            $("#bupupd").click(function () { ckhUp({ frm: $("#frmupupd"), t: true, dialog: $("#dvupupd") }); });
-            /*次項新增確認*/
-            $("#bupd").click(function () { ckhUp({ frm: $("#frmupd"), t: false, dialog: $("#dvupd") }); });
-        });
     </script>
 }

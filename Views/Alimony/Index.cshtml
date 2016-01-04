@@ -1,12 +1,103 @@
 ﻿@using MaxiJMobile.Models;
+<div class="searcher">
+    <div>
+        <a href="#" id="aup">新增</a>
+    </div>
+</div>
+<div id="dvupupd" class="upd" title="增修">
+    <form id="frmupupd">
+        <input type="hidden" name="cSeq" />
+        <table>
+            <tr>
+                <th>名稱</th>
+                <td><input id="cName" name="cName" type="text" maxlength="20" size="12" placeholder="名稱" /></td>
+            </tr>
+            <tr>
+                <th>收支</th>
+                <td><select id="cType" name="cType"></select></td>
+            </tr>
+            <tr>
+                <th>分類</th>
+                <td><select id="cTypeDesc" name="cTypeDesc"></select></td>
+            </tr>
+            <tr>
+                <th>金額</th>
+                <td><input id="cAmount" name="cAmount" type="number" maxlength="18" size="12" placeholder="金額" /></td>
+            </tr>
+            <tr>
+                <th>基期</th>
+                <td><select id="cBaseDtType" name="cBaseDtType"></select></td>
+            </tr>
+            <tr>
+                <th>描述</th>
+                <td><input name="cDesc" type="text" maxlength="50" size="12" placeholder="描述" /></td>
+            </tr>
+            <tr>
+                <th>期數</th>
+                <td>
+                    <input id="cPeriod" name="cPeriod" type="number" maxlength="99" placeholder="期數" />/
+                    <input id="cTotalPeriod" name="cTotalPeriod" type="number" maxlength="99" placeholder="總期數" value="0" />
+                </td>
+            </tr>
+            <tr>
+                <th>合約/到期日</th>
+                <td><input id="cDaylineDt" name="cDaylineDt" type="date" maxlength="10" size="12" placeholder="合約/到期日" /></td>
+            </tr>
+            <tr>
+                <th>啟用</th>
+                <td>
+                    <input type="radio" name="cEnable" id="cEnableY" checked="checked" value="true" />
+                    <label for="cEnableY">是</label>
+                    <input type="radio" name="cEnable" id="cEnableN" value="false" />
+                    <label for="cEnableN">否</label>
+                </td>
+            </tr>
+        </table>
+        <div class="dvupbtn">
+            <button id="bupd" type="button">確認</button>
+            <button id="reset" type="reset">重設</button>
+        </div>
+    </form>
+</div>
 <div class="data">
     <table>
         <tr>
-            <td id="pie" style="opacity :0.8;margin-left:5%;"></td>
-            <td></td>
+            <td id="pie" style="opacity :0.8;"></td>
+            <td rowspan="2" id="tddata"></td>
         </tr>
         <tr>
-            <td colspan="2"></td>
+            <td>
+                <table class="main">
+                    <tr>
+                        <th>年收入</th>
+                        <td class="r">000000</td>
+                        <th>年支出</th>
+                        <td class="r">000000</td>
+                        <th>年淨收入</th>
+                        <td class="r">000000</td>
+                    </tr>
+                    <tr>
+                        <th>月收入</th>
+                        <td class="r">000000</td>
+                        <th>月支出</th>
+                        <td class="r">000000</td>
+                        <th>月淨收入</th>
+                        <td class="r">000000</td>
+                    </tr>
+                    <tr>
+                        <th colspan="6">年基期(元)/月</th>
+                    </tr>
+                    <tr>
+                        <td colspan="6" class="r">000000</td>
+                    </tr>
+                    <tr>
+                        <th colspan="6">三個月生活預備金</th>
+                    </tr>
+                    <tr>
+                        <td colspan="6" class="r">000000</td>
+                    </tr>
+                </table>
+            </td>
         </tr>
     </table>
 </div>
@@ -14,43 +105,121 @@
     <script src="~/Scripts/highcharts/4.2.0/highcharts.js"></script>
     <script src="~/Scripts/highcharts/4.2.0/themes/dark-unica.js"></script>
     <script>
-        $(function () {
-            // Make monochrome colors and set them as default for all pies
+        var pay = null, income = null, data = null;
+        function getData() {
+            $.post('@Url.Content("~/Select/getAlimonyAll")').done(function (d) {
+                $("#tddata").tableData({
+                    "title": "生活費分配表",
+                    "th": [{ n: "名稱", v: "cName" }, { n: "收支", v: "cTypeName" }, { n: "分類", v: "cTypeDescName" }, { n: "基期", v: "cBaseDtTypeName", t: "txt-c" }, { n: "金額", v: "cAmount", t: "num" },
+                        { n: "描述", v: "cDesc" }, { n: "期數", v: "cPeriod", t: "num" }, { n: "總期數", v: "cTotalPeriod", t: "num" }, { n: "合約/到期日", v: "cDaylineDt" },
+                        {
+                            n: "修改", t: "btn", f: function (e) {
+                                var frm = $("#frmupd");
+                                for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                $("#cEnableY").prop("checked", e.cEnable);
+                                $("#cEnableN").prop("checked", !e.cEnable);
+                                $("#dvupd").dialogopen();
+                            }
+                        }],
+                    "ths": { "k": "cType", th: [{ v: "cTypeName" }] },
+                    "hidden": ["cSeq", "cType", "cTypeDesc", "cBaseDtType", "cEnable"],
+                    "data": d
+                });
+            });
+        }
+        $(window).load(function () {
+            getData();
+            /*新增確認*/
+            $("#bupd").click(function () {
+                if ($.isNoneEmpty($("#cName,#cAmount,#cTotalPeriod"))) { return; }
+                var cp = $("#cPeriod").totrim(), ctp = $("#cTotalPeriod").totrim()
+                if (cp != "") { if (parseInt(cp) > parseInt(ctp)) { $.alert("X1：「期數」不可以大於「總期數」!!!"); return; } }
+                $.post('@Url.Content("~/Insert/setAlimonyInsert")', $("#frmupupd").serialize())
+                    .done(function (q) {
+                        getData();
+                        $.alert("Y1：新增" + (q.ok ? "成功" : "失敗") + "!!!");
+                        $("#dvupupd").dialog("close");
+                    });
+            });
+            /*合約/到期日*/
+            $("#cDaylineDt").datepickeropen();
+            /*新增*/
+            $("#aup").click(function () {
+                var $li = $("#dvupupd");
+                $li.find("input[name='cSeq']").val("");
+                $("#reset").click();
+                $li.dialogopen();
+            });
+            /*收支*/
+            $("#cType").getCodeOpt({ "cupid": "02004" })
+                .change(function () { $("#cTypeDesc").selecteCode(($(this).find(":selected").val() == "0") ? pay : income); });
+            /*分類*/
+            $("#cTypeDesc").getCodeOpt({ "cupid": "02002", "done": function (dx) { income = dx; } });
+            $.getCode({ "cupid": "02001", "done": function (dx) { pay = dx; } });
+            /*基期*/
+            $("#cBaseDtType").getCodeOpt({ "cupid": "02003" });
+            /*重設*/
+            $("#reset").click(function () { $("#cTypeDesc").selecteCode(income); });
+            /*pies chart*/
             Highcharts.getOptions().plotOptions.pie.colors = (function () {
                 var colors = [], base = Highcharts.getOptions().colors[0], i;
                 for (i = 0; i < 30; i += 1) { colors.push(Highcharts.Color(base).brighten((i - 3) / 7).get()); }
                 return colors;
             }());
-            // Build the chart
             $('#pie').highcharts({
                 chart: {
                     plotBackgroundColor: null,
-                    plotBorderWidth: null,
+                    plotBorderWidth: 0,
                     plotShadow: false,
-                    type: 'pie'
+                    borderRadius: 10,
+                    width: 400,
+                    height: 200
                 },
-                title: { text: 'Browser market, 2014' },
+                title: {
+                    text: '生活費分配表',
+                    align: 'center',
+                    verticalAlign: 'middle',
+                    y: 70
+                },
                 tooltip: { pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' },
+                credits: { enabled: false },  /*隱藏官方連結*/
                 plotOptions: {
                     pie: {
                         allowPointSelect: true,
                         cursor: 'pointer',
                         dataLabels: {
                             enabled: true,
-                            format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                            style: { color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black' }
-                        }
+                            distance: 0,
+                            style: {
+                                fontWeight: 'bold',
+                                color: 'white',
+                                textShadow: '0px 1px 2px black'
+                            }
+                        },
+                        startAngle: -90,
+                        endAngle: 90,
+                        center: ['50%', '75%']
                     }
                 },
                 series: [{
-                    name: 'Brands',
+                    type: 'pie',
+                    name: '佔比',
+                    innerSize: '30%',
                     data: [
-                        { name: 'Microsoft Internet Explorer', y: 56.33 },
-                        { name: 'Chrome', y: 24.03 },
-                        { name: 'Firefox', y: 10.38 },
-                        { name: 'Safari', y: 4.77 },
-                        { name: 'Opera', y: 0.91 },
-                        { name: 'Proprietary or Undetectable', y: 0.2 }
+                        ['Firefox', 10.38],
+                        ['IE', 56.33],
+                        ['Chrome', 24.03],
+                        ['Safari', 4.77],
+                        ['Opera', 0.91],
+                               {
+                                   name: 'a',
+                                   y: 17
+                               },
+                        {
+                            name: 'Proprietary or Undetectable',
+                            y: 0.2,
+                            dataLabels: { enabled: false }
+                        }
                     ]
                 }]
             });

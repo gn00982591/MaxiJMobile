@@ -551,3 +551,7 @@ a {
         padding-bottom: 10px;
         font-family: 'cwTeXFangSong', serif;
     }
+
+input[type=number] {
+    width: 100px;
+}
