@@ -6,7 +6,7 @@
 </div>
 <div id="dvupupd" class="upd" title="增修">
     <form id="frmupupd">
-        <input type="hidden" name="cSeq" />
+        <input type="hidden" name="cSeq" id="cSeq" />
         <table>
             <tr>
                 <th>名稱</th>
@@ -62,91 +62,133 @@
 <div class="data">
     <table>
         <tr>
-            <td id="pie" style="opacity :0.8;"></td>
-            <td rowspan="2" id="tddata"></td>
-        </tr>
-        <tr>
             <td>
-                <table class="main">
+                <input type="radio" id="chkin" name="chkchart" value="1" />
+                <label for="chkin">收入</label>
+                <input type="radio" id="chkout" name="chkchart" value="0" checked="checked" />
+                <label for="chkout">支出</label>
+                <div id="pie" style="opacity :0.8;"></div>
+            </td>
+            <td style="vertical-align:top;text-align:left;">
+                <table class="main" id="calculate" style="margin:0;">
                     <tr>
                         <th>年收入</th>
-                        <td class="r">000000</td>
+                        <td class="r" name="yin">-</td>
                         <th>年支出</th>
-                        <td class="r">000000</td>
+                        <td class="r" name="yout">-</td>
                         <th>年淨收入</th>
-                        <td class="r">000000</td>
+                        <td class="r" name="yl">-</td>
                     </tr>
                     <tr>
                         <th>月收入</th>
-                        <td class="r">000000</td>
+                        <td class="r" name="min">-</td>
                         <th>月支出</th>
-                        <td class="r">000000</td>
+                        <td class="r" name="mout">-</td>
                         <th>月淨收入</th>
-                        <td class="r">000000</td>
-                    </tr>
-                    <tr>
-                        <th colspan="6">年基期(元)/月</th>
-                    </tr>
-                    <tr>
-                        <td colspan="6" class="r">000000</td>
+                        <td class="r" name="ml">-</td>
                     </tr>
                     <tr>
                         <th colspan="6">三個月生活預備金</th>
                     </tr>
                     <tr>
-                        <td colspan="6" class="r">000000</td>
+                        <td colspan="6" class="r" name="sm">-</td>
                     </tr>
                 </table>
             </td>
         </tr>
+        <tr>
+            <td colspan="2" id="tddata"></td>
+        </tr>
     </table>
 </div>
 @section scripts {
-    <script src="~/Scripts/highcharts/4.2.0/highcharts.js"></script>
-    <script src="~/Scripts/highcharts/4.2.0/themes/dark-unica.js"></script>
     <script>
-        var pay = null, income = null, data = null;
+        var pay = null, income = null, chardata = null, updateitem = null;
+        function setChart() {
+            if ($.isEmptyObject(chardata)) { return; }
+            /*pies chart*/
+            $('#pie').charts({
+                "title": '生活費分配表',
+                data: $.grep(chardata, function (a) { return a.cType == $("input[name='chkchart']:checked").val(); })
+            });
+        }
+
         function getData() {
+            $.post('@Url.Content("~/Select/getAlimonyCalculate")').done(function (d) {
+                var oj = $("#calculate");
+                for (var i in d) { oj.find("td[name='" + i + "']").text(d[i]) }
+            });
+            $.post('@Url.Content("~/Select/getAlimonyChart")').done(function (d) {
+                chardata = d;
+                setChart();
+            });
             $.post('@Url.Content("~/Select/getAlimonyAll")').done(function (d) {
+                updateitem = d[0];
                 $("#tddata").tableData({
                     "title": "生活費分配表",
-                    "th": [{ n: "名稱", v: "cName" }, { n: "收支", v: "cTypeName" }, { n: "分類", v: "cTypeDescName" }, { n: "基期", v: "cBaseDtTypeName", t: "txt-c" }, { n: "金額", v: "cAmount", t: "num" },
-                        { n: "描述", v: "cDesc" }, { n: "期數", v: "cPeriod", t: "num" }, { n: "總期數", v: "cTotalPeriod", t: "num" }, { n: "合約/到期日", v: "cDaylineDt" },
+                    "th": [{ n: "名稱", v: "cName" }, { n: "分類", v: "cTypeDescName" }, { n: "基期", v: "cBaseDtTypeName", t: "txt-c" }, { n: "金額", v: "cAmount", t: "num" },
+                        { n: "描述", v: "cDesc", t: "txt-most" }, { n: "期數", v: "cPeriod", t: "num" }, { n: "總期數", v: "cTotalPeriod", t: "num" }, { n: "合約/到期日", v: "cDaylineDt" }, { n: "啟用", v: "cEnable", t: "bool" },
                         {
                             n: "修改", t: "btn", f: function (e) {
-                                var frm = $("#frmupd");
+                                var frm = $("#frmupupd");
                                 for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
                                 $("#cEnableY").prop("checked", e.cEnable);
                                 $("#cEnableN").prop("checked", !e.cEnable);
-                                $("#dvupd").dialogopen();
+                                $("#dvupupd").dialogopen();
                             }
-                        }],
+                        },
+                        {
+                            n: "刪除", t: "btn", f: function (e, t) {
+                                var tr = $(t).parents("tr:first");
+                                if (tr.find(":checkbox[name='isselect']").prop("checked")) {
+                                    $.post('@Url.Content("~/Insert/setAlimonyDelete")', { o: parseInt(tr.find("[name='cSeq']").val()) })
+                                          .done(function (q) {
+                                              getData();
+                                              $.alert("Y1：刪除" + (q.ok ? "成功" : "失敗") + "!!!");
+                                          });
+                                } else { $.alert("X1：「選」未勾選，該項無法刪除!!!"); return; }
+                            }
+                        },
+                        { n: "選", t: "bool-select" }],
                     "ths": { "k": "cType", th: [{ v: "cTypeName" }] },
-                    "hidden": ["cSeq", "cType", "cTypeDesc", "cBaseDtType", "cEnable"],
+                    "hidden": ["cSeq", "cType", "cTypeDesc", "cBaseDtType"],
                     "data": d
                 });
             });
         }
         $(window).load(function () {
             getData();
+            $("#chkin,#chkout").click(function () { setChart(); });
             /*新增確認*/
             $("#bupd").click(function () {
                 if ($.isNoneEmpty($("#cName,#cAmount,#cTotalPeriod"))) { return; }
-                var cp = $("#cPeriod").totrim(), ctp = $("#cTotalPeriod").totrim()
+                var cp = $("#cPeriod").totrim().val(), ctp = $("#cTotalPeriod").totrim().val();
                 if (cp != "") { if (parseInt(cp) > parseInt(ctp)) { $.alert("X1：「期數」不可以大於「總期數」!!!"); return; } }
-                $.post('@Url.Content("~/Insert/setAlimonyInsert")', $("#frmupupd").serialize())
-                    .done(function (q) {
-                        getData();
-                        $.alert("Y1：新增" + (q.ok ? "成功" : "失敗") + "!!!");
-                        $("#dvupupd").dialog("close");
-                    });
+                if ($("#cSeq").val() == "") {
+                    $.post('@Url.Content("~/Insert/setAlimonyInsert")', $("#frmupupd").serialize())
+                        .done(function (q) {
+                            getData();
+                            $.alert("Y1：新增" + (q.ok ? "成功" : "失敗") + "!!!");
+                        });
+                } else {
+                    var dv = $("#dvupupd");
+                    for (var g in updateitem) { updateitem[g] = dv.find('[name="' + g + '"]').val(); }
+                    updateitem.cEnable = dv.find('#cEnableY').is(":checked");
+                    $.post('@Url.Content("~/Insert/setAlimonyUpdate")', updateitem)
+                        .done(function (q) {
+                            getData();
+                            $.alert("Y1：修改" + (q.ok ? "成功" : "失敗") + "!!!");
+                        });
+                }
+                $("#dvupupd").dialog("close");
             });
             /*合約/到期日*/
             $("#cDaylineDt").datepickeropen();
             /*新增*/
             $("#aup").click(function () {
                 var $li = $("#dvupupd");
-                $li.find("input[name='cSeq']").val("");
+                $("#cSeq").val("");
+                $("#cType").change();
                 $("#reset").click();
                 $li.dialogopen();
             });
@@ -160,69 +202,6 @@
             $("#cBaseDtType").getCodeOpt({ "cupid": "02003" });
             /*重設*/
             $("#reset").click(function () { $("#cTypeDesc").selecteCode(income); });
-            /*pies chart*/
-            Highcharts.getOptions().plotOptions.pie.colors = (function () {
-                var colors = [], base = Highcharts.getOptions().colors[0], i;
-                for (i = 0; i < 30; i += 1) { colors.push(Highcharts.Color(base).brighten((i - 3) / 7).get()); }
-                return colors;
-            }());
-            $('#pie').highcharts({
-                chart: {
-                    plotBackgroundColor: null,
-                    plotBorderWidth: 0,
-                    plotShadow: false,
-                    borderRadius: 10,
-                    width: 400,
-                    height: 200
-                },
-                title: {
-                    text: '生活費分配表',
-                    align: 'center',
-                    verticalAlign: 'middle',
-                    y: 70
-                },
-                tooltip: { pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' },
-                credits: { enabled: false },  /*隱藏官方連結*/
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        cursor: 'pointer',
-                        dataLabels: {
-                            enabled: true,
-                            distance: 0,
-                            style: {
-                                fontWeight: 'bold',
-                                color: 'white',
-                                textShadow: '0px 1px 2px black'
-                            }
-                        },
-                        startAngle: -90,
-                        endAngle: 90,
-                        center: ['50%', '75%']
-                    }
-                },
-                series: [{
-                    type: 'pie',
-                    name: '佔比',
-                    innerSize: '30%',
-                    data: [
-                        ['Firefox', 10.38],
-                        ['IE', 56.33],
-                        ['Chrome', 24.03],
-                        ['Safari', 4.77],
-                        ['Opera', 0.91],
-                               {
-                                   name: 'a',
-                                   y: 17
-                               },
-                        {
-                            name: 'Proprietary or Undetectable',
-                            y: 0.2,
-                            dataLabels: { enabled: false }
-                        }
-                    ]
-                }]
-            });
         });
     </script>
 }

@@ -29,11 +29,9 @@
             <img src="~/Content/images/preloader.gif" alt="Loading..." class="preloader__img">
         </div>
         <div class="welcome_classic" id="welcome">
-            <section class="left-sidebar">
+            @*<section class="left-sidebar">
                 <ul class="main-menu">
-                    @{
-                        var name = ViewContext.ControllerName().ToStringUpper();
-                        var vname = ViewContext.ActionName().ToStringUpper();
+                    @{      
                         if (!(name == "WAY" && vname == "INDEX"))
                         {
                             using (var db = new db850b60b99a9145fea7aea52f005a5589Entities())
@@ -46,10 +44,12 @@
                         }
                     }
                 </ul>
-            </section>
+            </section>*@
             <section class="main-sidebar">
                 <ul class="main-menu">
                     @{
+                        var name = ViewContext.ControllerName().ToStringUpper();
+                        var vname = ViewContext.ActionName().ToStringUpper();
                         if (!(name == "WAY" && vname == "INDEX"))
                         {
                             using (var db = new db850b60b99a9145fea7aea52f005a5589Entities())
@@ -76,7 +76,7 @@
             <div id="debug"></div>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2016010401</span>
+            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2016010601</span>
         </footer>
     </div>
     <script>

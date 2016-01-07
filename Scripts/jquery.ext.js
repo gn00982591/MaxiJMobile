@@ -71,15 +71,32 @@
                                 case "bool-lab":
                                     td.addClass("c").append("<input type='checkbox' disabled='disabled' " + (e[ee.v] ? "checked='checked'" : "") + " />" + ee.n);
                                     break;
+                                case "bool-select":
+                                    var inpuname = "isselect";
+                                    td.addClass("c").append($("<input>", { "type": "checkbox", "name": inpuname }).click(function () {
+                                        var isc = $(this).prop("checked");
+                                        $("input[name='" + inpuname + "']:checked").prop("checked", false);
+                                        $(this).prop("checked", isc);
+                                        if ($.isFunction(ee.f)) { ee.f(e); }
+                                    }));
+                                    break;
                                 case "num":
                                     str = e[ee.v].toString();
                                     td.addClass("r").append(str.replace(/\./.test(str) ? (/(\d{1,3})(?=(\d{3})+\.)/g) : (/(\d{1,3})(?=(\d{3})+$)/g), "$1,"));
                                     break;
                                 case "btn":
-                                    td.addClass("c").append($("<button/>").text(ee.n).click(function () { if ($.isFunction(ee.f)) { ee.f(e); } }));
+                                    var btn = $("<button/>").text(ee.n).click(function () { if ($.isFunction(ee.f)) { ee.f(e, btn); } });
+                                    if (ee.elename != null && ee.elename != "") { btn.prop("name", ee.elename); }
+                                    td.addClass("c").append(btn);
                                     break;
-                                case "txt-c":
-                                    td.addClass("c").append(e[ee.v]); break;
+                                case "txt-c": td.addClass("c").append(e[ee.v]); break;
+                                case "txt-most":
+                                    var cstr = 5;
+                                    if (e[ee.v] != "" && e[ee.v].length > cstr) {
+                                        td.removeProp("name").addClass("pointer").click(function () { $.alert(e[ee.v]); })
+                                            .append("<input type='hidden' name='" + ee.v + "' value='" + e[ee.v] + "' />")
+                                            .append(e[ee.v].substr(0, cstr) + "...");
+                                    } else { td.append(e[ee.v]); }
                                     break;
                                 case "other":
                                     //使用bind來綁定func
@@ -106,9 +123,12 @@
                     if ($.isEmptyObject(obj.ths)) { $(obj.data).each(function (i, e) { tb.append(setLast(e, obj.th)); }); }
                     else {
                         if ($.isEmptyObject(obj.ths.v)) {
-                            var kli = [];
+                            var kli = [], kliup = [];
                             for (var i in obj.data) {
-                                if ($.inArray(obj.data[i][obj.ths.k], kli) < 0) { kli.push(obj.data[i]); }
+                                if ($.inArray(obj.data[i][obj.ths.k], kliup) < 0) {
+                                    kli.push(obj.data[i]);
+                                    kliup.push(obj.data[i][obj.ths.k]);
+                                }
                             }
                             for (var i in kli) {
                                 tb.append(setLast(kli[i], obj.ths.th, 1));
@@ -131,8 +151,56 @@
                 t.css("vertical-align", "top").append(tb);
             });
         },
+        "charts": function (obj) {
+            var t = $(this);
+            if ($.isEmptyObject(t)) { $.alert("XX：綁定的 Element 不存在!!!"); return; }
+            if (obj.data.length <= 0 || $.isEmptyObject(obj.data)) { tb.append("<div class='w c'>無資料</div>"); }
+            Highcharts.getOptions().plotOptions.pie.colors = (function () {
+                var colors = [], base = Highcharts.getOptions().colors[0], i;
+                for (i = 0; i < 30; i += 1) { colors.push(Highcharts.Color(base).brighten((i - 3) / 7).get()); }
+                return colors;
+            }());
+            $(this).highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false,
+                    borderRadius: 10,
+                    width: 400,
+                    height: 200
+                },
+                title: {
+                    text: obj.title,
+                    align: 'center',
+                    verticalAlign: 'middle',
+                    y: 70
+                },
+                tooltip: { pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>' },
+                credits: { enabled: false },  /*隱藏官方連結*/
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            distance: 0,
+                            style: { fontWeight: 'bold', color: 'white', textShadow: '0px 1px 2px black' }
+                        },
+                        startAngle: -90,
+                        endAngle: 90,
+                        center: ['50%', '75%']
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    name: '佔比',
+                    innerSize: '30%',
+                    data: obj.data
+                }]
+            });
+        },
         /*dialog*/
-        "dialogopen": function () { $(this).dialog({ autoOpen: true, modal: true, width: "auto" }); return $(this);},
+        "dialogopen": function () { $(this).dialog({ autoOpen: true, modal: true, width: "auto" }); return $(this); },
         /*datepicker*/
         "datepickeropen": function () {
             $(this).datepicker({
@@ -153,7 +221,7 @@
                 "cupid": obj.cupid,
                 "done": function (dx) {
                     $t.selecteCode(dx);
-                    if ($.isFunction(obj.done)) { obj.done(dx);}
+                    if ($.isFunction(obj.done)) { obj.done(dx); }
                 }
             });
             return $t;
