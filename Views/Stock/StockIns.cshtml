@@ -1,0 +1,97 @@
+﻿@using MaxiJMobile.Models;
+<div class="searcher">
+    <div>
+        <a href="#" id="aup">新增</a>
+    </div>
+</div>
+<div id="dvupupd" class="upd" title="增修">
+    <form id="frmupupd">
+        <input type="hidden" name="cSeq" id="cSeq" />
+        <input type="hidden" name="cPrice" />
+        <input type="hidden" name="cPriceDt" />
+        <table>
+            <tr>
+                <th>名稱</th>
+                <td><input id="cName" name="cName" type="text" maxlength="10" size="11" placeholder="股票名稱" /></td>
+            </tr>
+            <tr>
+                <th>代號</th>
+                <td><input name="cId" type="text" maxlength="10" size="11" placeholder="股票代號" /></td>
+            </tr>
+            <tr>
+                <th>購入目標量</th>
+                <td><input name="cTargetQty" type="number" size="12" placeholder="購入目標量" value="0" /></td>
+            </tr>
+            <tr>
+                <th>啟用</th>
+                <td>
+                    <input type="radio" name="cEnable" id="cEnableY" checked="checked" value="true" />
+                    <label for="cEnableY">是</label>
+                    <input type="radio" name="cEnable" id="cEnableN" value="false" />
+                    <label for="cEnableN">否</label>
+                </td>
+            </tr>
+        </table>
+        <div class="dvupbtn">
+            <button id="bupd" type="button">確認</button>
+            <button id="reset" type="reset">重設</button>
+        </div>
+    </form>
+</div>
+<div id="dvdata" class="data"></div>
+@section scripts {
+    <script>
+        var updateitem = null;
+        function getData() {
+            $.post('@Url.Content("~/Select/getStockAll")').done(function (d) {
+                updateitem = d[0];
+                $("#dvdata").tableData({
+                    "title": "股票列表",
+                    "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "購入目標量", v: "cTargetQty", t: "num" }, { n: "啟用", v: "cEnable", t: "bool" },
+                        {
+                            n: "修改", t: "btn", f: function (e) {
+                                var frm = $("#frmupupd");
+                                for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                $("#cEnableY").prop("checked", e.cEnable);
+                                $("#cEnableN").prop("checked", !e.cEnable);
+                                $("#dvupupd").dialogopen();
+                            }
+                        }],
+                    "hidden": ["cSeq", "cPrice", "cPriceDt"],
+                    "data": d
+                });
+            });
+        }
+        $(window).load(function () {
+            getData();
+            /*新增*/
+            $("#aup").click(function () {
+                var $li = $("#dvupupd");
+                $li.find(":hidden").val("");
+                $("#reset").click();
+                $li.dialogopen();
+            });
+            /*新增確認*/
+            $("#bupd").click(function () {
+                if ($.isNoneEmpty($("#frmupupd").find("input[type='text']"))) { return; }
+                if ($("#cSeq").val() == "") {
+                    $.post('@Url.Content("~/Insert/setStockInsert")', $("#frmupupd").serialize())
+                        .done(function (q) {
+                            getData();
+                            $.alert(q.msg);
+                        });
+                } else {
+                    var dv = $("#dvupupd");
+                    for (var g in updateitem) { updateitem[g] = dv.find('[name="' + g + '"]').val(); }
+                    updateitem.cEnable = dv.find('#cEnableY').is(":checked");
+                    $.post('@Url.Content("~/Insert/setStockUpdate")', updateitem)
+                        .done(function (q) {
+                            getData();
+                            $.alert(q.msg);
+                        });
+                }
+                $("#dvupupd").dialog("close");
+            });
+        });
+    </script>
+}

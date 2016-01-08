@@ -142,10 +142,10 @@
                                 var tr = $(t).parents("tr:first");
                                 if (tr.find(":checkbox[name='isselect']").prop("checked")) {
                                     $.post('@Url.Content("~/Insert/setAlimonyDelete")', { o: parseInt(tr.find("[name='cSeq']").val()) })
-                                          .done(function (q) {
-                                              getData();
-                                              $.alert("Y1：刪除" + (q.ok ? "成功" : "失敗") + "!!!");
-                                          });
+                                        .done(function (q) {
+                                            getData();
+                                            $.alert("Y1：刪除" + (q.ok ? "成功" : "失敗") + "!!!");
+                                        });
                                 } else { $.alert("X1：「選」未勾選，該項無法刪除!!!"); return; }
                             }
                         },
@@ -168,7 +168,7 @@
                     $.post('@Url.Content("~/Insert/setAlimonyInsert")', $("#frmupupd").serialize())
                         .done(function (q) {
                             getData();
-                            $.alert("Y1：新增" + (q.ok ? "成功" : "失敗") + "!!!");
+                            $.alert(q.msg);
                         });
                 } else {
                     var dv = $("#dvupupd");
@@ -177,7 +177,7 @@
                     $.post('@Url.Content("~/Insert/setAlimonyUpdate")', updateitem)
                         .done(function (q) {
                             getData();
-                            $.alert("Y1：修改" + (q.ok ? "成功" : "失敗") + "!!!");
+                            $.alert(q.msg);
                         });
                 }
                 $("#dvupupd").dialog("close");

@@ -231,7 +231,7 @@
                         $.post('@Url.Content("~/Insert/setCodeInsert")', obj.frm.serialize())
                             .done(function (q) {
                                 ok(q.ok);
-                                $.alert("Y1：新增" + (q.ok ? "成功" : "失敗") + "!!!");
+                                $.alert(q.msg);
                             });
                     } else {
                         if (cSeq != d.cSeq) { if (null != d.cUpId) { $.alert("X8：「主索引鍵」資料重複!!!"); return; } }
@@ -243,7 +243,7 @@
                         $.post(obj.t ? '@Url.Content("~/Insert/setCodeUpUpdate")' : '@Url.Content("~/Insert/setCodeUpdate")', d)
                             .done(function (q) {
                                 ok(q.ok);
-                                $.alert("Y1：修改" + (q.ok ? "成功" : "失敗") + "!!!");
+                                $.alert(q.msg);
                             });
                     }
                     obj.dialog.dialog("close");

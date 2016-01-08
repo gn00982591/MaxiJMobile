@@ -30,21 +30,21 @@
         </div>
         <div class="welcome_classic" id="welcome">
             @*<section class="left-sidebar">
-                <ul class="main-menu">
-                    @{      
-                        if (!(name == "WAY" && vname == "INDEX"))
-                        {
-                            using (var db = new db850b60b99a9145fea7aea52f005a5589Entities())
+                    <ul class="main-menu">
+                        @{
+                            if (!(name == "WAY" && vname == "INDEX"))
                             {
-                                foreach (var i in db.tUrl.Where(s => s.cEnable && s.cUpId == "00000").OrderBy(s => s.cSort))
+                                using (var db = new db850b60b99a9145fea7aea52f005a5589Entities())
                                 {
-                                    <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
+                                    foreach (var i in db.tUrl.Where(s => s.cEnable && s.cUpId == "00000").OrderBy(s => s.cSort))
+                                    {
+                                        <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
+                                    }
                                 }
                             }
                         }
-                    }
-                </ul>
-            </section>*@
+                    </ul>
+                </section>*@
             <section class="main-sidebar">
                 <ul class="main-menu">
                     @{
@@ -54,14 +54,15 @@
                         {
                             using (var db = new db850b60b99a9145fea7aea52f005a5589Entities())
                             {
-                                foreach (var i in db.tUrl.Where(s => s.cEnable && (name == "WAY" ? s.cUpId == "00000" : (s.cFolder == name && s.cPage.ToUpper() != "INDEX"))).OrderBy(s => s.cSort))
+                                var tul = db.tUrl.FirstOrDefault(s => s.cFolder == name && s.cUpId == csProp.WayPageId);
+                                if (tul != null)
                                 {
-                                    <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
-                                }
-                                if (vname != "WAY")
-                                {
+                                    foreach (var i in db.tUrl.Where(s => s.cEnable && s.cUpId != csProp.WayPageId && s.cUpId == tul.cId).OrderBy(s => s.cSort))
+                                    {
+                                        <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
+                                    }
                                     <li class='menu-item scroll'><a href='#'></a></li>
-                                    foreach (var i in db.tUrl.Where(s => s.cEnable && s.cUpId == "00000").OrderBy(s => s.cSort))
+                                    foreach (var i in db.tUrl.Where(s => s.cEnable && s.cUpId == csProp.WayPageId).OrderBy(s => s.cSort))
                                     {
                                         <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
                                     }
@@ -76,7 +77,7 @@
             <div id="debug"></div>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2016010601</span>
+            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang <span style="font-size:2px;color:ButtonShadow">ver.2016010801</span>
         </footer>
     </div>
     <script>
