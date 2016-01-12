@@ -84,7 +84,7 @@
                     var dv = $("#dvupupd");
                     for (var g in updateitem) { updateitem[g] = dv.find('[name="' + g + '"]').val(); }
                     updateitem.cEnable = dv.find('#cEnableY').is(":checked");
-                    $.post('@Url.Content("~/Insert/setStockUpdate")', updateitem)
+                    $.post('@Url.Content("~/Insert/setStockUpdate")', { "url": updateitem })
                         .done(function (q) {
                             getData();
                             $.alert(q.msg);
