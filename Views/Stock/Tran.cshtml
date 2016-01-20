@@ -1,8 +1,83 @@
 ﻿@using MaxiJMobile.Models;
+<div class="searcher">
+    <div>
+        <form id="frmup">
+            <table id="tbup">
+                <tr>
+                    <th>股票</th>
+                    <td>
+                        <input id="stock" type="text" maxlength="10" size="11" placeholder="股票名稱/代號" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div class="dvbtn">
+            <button id="bsubmit" type="button">查詢</button>
+            <button id="breset" type="reset">重設</button>
+        </div>
+    </div>
+</div>
+<div id="dvdata" class="data"></div>
 @section scripts {
     <script>
+        var chardata = null, updateitem = null, dv = null;
+        function getData(isg) {
+            function ok(d) {
+
+                if (isg) {
+                    chardata = $.grep(d, function (a) { return a.cId.indexOf(st) >= 0 || a.cName.indexOf(st) >= 0; });
+                }
+                else { chardata = d; }
+                $("#dvdata").tableData({
+                    "title": "股票列表",
+                    "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "購入目標(張)", v: "cTargetQty", t: "num" }, { n: "啟用", v: "cEnable", t: "bool" },
+                        {
+                            n: "修改", t: "btn", f: function (e) {
+                                var frm = $("#frmupupd");
+                                for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                $("#cEnableY").prop("checked", e.cEnable);
+                                $("#cEnableN").prop("checked", !e.cEnable);
+                                $("#dvupupd").dialogopen();
+                            }
+                        }],
+                    "hidden": ["cSeq", "cPrice", "cPriceDt"],
+                    "data": chardata
+                });
+            }
+            if (isg) { ok(dv); }
+            else { $.post('@Url.Content("~/Select/getStockId")').done(function (x) { dv = x; }); }
+        }
         $(window).load(function () {
+            /*查詢*/
+            $("#bsubmit").click(function () {
+                var st = $("#stock").totrimupper().val();
+                $.post('@Url.Content("~/Select/getStockMultiId")', { "str": $("#stock").totrimupper().val() })
+                    .done(function (x) {
+                        dv = x;
+                        if (x.isok) {
+                            $("#dvdata").tableData({
+                                "title": "股票列表",
+                                "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "購入目標(張)", v: "cTargetQty", t: "num" },
+                                    {
+                                        n: "新增交易", t: "btn", f: function (e) {
+                                            var frm = $("#frmupupd");
+                                            for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                            $("#dvupupd").dialogopen();
+                                        }
+                                    },
+                                    {
+                                        n: "交易查詢", t: "btn", f: function (e) {
+                                            var frm = $("#frmupupd");
+                                            for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                            $("#dvupupd").dialogopen();
+                                        }
+                                    }],
+                                "data": x.data
+                            });
+                        }
+                        else { $.alert(x.msg); }
+                    });
+            });
         });
     </script>
 }
-

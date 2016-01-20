@@ -84,6 +84,10 @@
                                     str = e[ee.v].toString();
                                     td.addClass("r").append(str.replace(/\./.test(str) ? (/(\d{1,3})(?=(\d{3})+\.)/g) : (/(\d{1,3})(?=(\d{3})+$)/g), "$1,"));
                                     break;
+                                case "num-rg":
+                                    str = e[ee.v].toString();
+                                    td.addClass("r").css("color", (e[ee.v] > 0 ? "red" : "green")).append(str.replace(/\./.test(str) ? (/(\d{1,3})(?=(\d{3})+\.)/g) : (/(\d{1,3})(?=(\d{3})+$)/g), "$1,"));
+                                    break;
                                 case "btn":
                                     var btn = $("<button/>").text(ee.n).click(function () { if ($.isFunction(ee.f)) { ee.f(e, btn); } });
                                     if (ee.elename != null && ee.elename != "") { btn.prop("name", ee.elename); }

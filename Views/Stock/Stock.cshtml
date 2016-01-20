@@ -1,7 +1,55 @@
 ﻿@using MaxiJMobile.Models;
+<div class="searcher">
+    <div>
+        <a href="#" id="aup">新增</a>
+        <form id="frmup">
+            <table id="tbup">
+                <tr>
+                    <th>股票</th>
+                    <td>
+                        <input id="stock" type="text" maxlength="10" size="11" placeholder="股票名稱/代號" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div class="dvbtn">
+            <button id="bsubmit" type="button">查詢</button>
+            <button id="breset" type="reset">重設</button>
+        </div>
+    </div>
+</div>
+<div id="dvdata" class="data"></div>
 @section scripts {
     <script>
+        var chardata = null, updateitem = null, dv = null;
+        function getData(isg) {
+            function ok(d) {
+                var st = $("#stock").totrimupper().val();
+                if (isg && st != "") {
+                    chardata = $.grep(d, function (a) { return a.cId.indexOf(st) >= 0 || a.cName.indexOf(st) >= 0; });
+                }
+                else { chardata = d; }
+                $("#dvdata").tableData({
+                    "title": "股票列表",
+                    "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存(張)", v: "cQty", t: "num" },
+                        { n: "均價", v: "cAvgPrice", t: "num" }, { n: "收價", v: "cPrice", t: "num" },
+                        { n: "損益", v: "cGet", t: "num-rg" }, { n: "累計息", v: "cIns", t: "num" },
+                        { n: "成本", v: "cCost", t: "num" }, { n: "目前價值", v: "cValue", t: "num" },
+                        { n: "收價時間", v: "cPriceDt" }],
+                    "data": chardata
+                });
+            }
+            if (isg) { ok(dv); }
+            else {
+                $.post('@Url.Content("~/Select/getStockHasTran")').done(function (x) {
+                    dv = x;
+                    updateitem = x[0];
+                    ok(x);
+                });
+            }
+        }
         $(window).load(function () {
+            getData();
         });
     </script>
 }

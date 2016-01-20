@@ -33,8 +33,8 @@
                 <td><input name="cId" type="text" maxlength="10" size="11" placeholder="股票代號" /></td>
             </tr>
             <tr>
-                <th>購入目標量</th>
-                <td><input name="cTargetQty" type="number" size="12" placeholder="購入目標量" value="0" /></td>
+                <th>購入目標(張)</th>
+                <td><input name="cTargetQty" type="number" size="12" placeholder="購入目標(張)" value="0" /></td>
             </tr>
             <tr>
                 <th>啟用</th>
@@ -65,7 +65,7 @@
                 else { chardata = d; }
                 $("#dvdata").tableData({
                     "title": "股票列表",
-                    "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "購入目標量", v: "cTargetQty", t: "num" }, { n: "啟用", v: "cEnable", t: "bool" },
+                    "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "購入目標(張)", v: "cTargetQty", t: "num" }, { n: "啟用", v: "cEnable", t: "bool" },
                         {
                             n: "修改", t: "btn", f: function (e) {
                                 var frm = $("#frmupupd");
