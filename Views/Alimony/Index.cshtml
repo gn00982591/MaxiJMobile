@@ -70,6 +70,7 @@
                 <div id="pie" style="opacity :0.8;"></div>
             </td>
             <td style="vertical-align:top;text-align:left;">
+                <span class="title">生活費統計表</span>
                 <table class="main" id="calculate" style="margin:0;">
                     <tr>
                         <th>年收入</th>
@@ -142,14 +143,14 @@
                                 var tr = $(t).parents("tr:first");
                                 if (tr.find(":checkbox[name='isselect']").prop("checked")) {
                                     $.post('@Url.Content("~/Insert/setAlimonyDelete")', { o: parseInt(tr.find("[name='cSeq']").val()) })
-                                        .done(function (q) {
-                                            getData();
-                                            $.alert("Y1：刪除" + (q.ok ? "成功" : "失敗") + "!!!");
-                                        });
+                                            .done(function (q) {
+                                                getData();
+                                                $.alert("Y1：刪除" + (q.ok ? "成功" : "失敗") + "!!!");
+                                            });
                                 } else { $.alert("X1：「選」未勾選，該項無法刪除!!!"); return; }
                             }
                         },
-                        { n: "選", t: "bool-select" }],
+                            { n: "選", t: "bool-select" }],
                     "ths": { "k": "cType", th: [{ v: "cTypeName" }] },
                     "hidden": ["cSeq", "cType", "cTypeDesc", "cBaseDtType"],
                     "data": d
