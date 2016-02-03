@@ -10,21 +10,49 @@
                 .done(function (d) {
                     if ($.isEmptyObject(d) && d.length <= 0) { $.alert("X4：getCode-無明細資料!!!"); }
                     obj.done(d);
-                });            
+                });
         },
         /*input不可空白*/
         "isNoneEmpty": function (o) {
-            var lii = o.totrim().css("background-color", "white")
-                .filter(function (i) { return $(this).val() == ""; });
+            var lii = o.totrim().css("background-color", "white").filter(function (i) { return $(this).val() == ""; });
             if (lii.length) {
                 lii.css("background-color", "yellow");
                 $.alert("X1：每個欄位皆為必填欄位!!!"); return true;
             }
             return false;
         },
+        /*input空白不處理判斷*/
+        "isTextEmpty": function (o) { return o.totrim().filter(function (i) { return $(this).val() == ""; }).length; },
         /*取得正在運作的子頁tab*/
-        "getTabId": function () { return $(".searcher a").filter(function () { return $(this).hasClass(aselect); }).prop("id"); }
+        "getTabId": function () { return $(".searcher a").filter(function () { return $(this).hasClass(aselect); }).prop("id"); },
+        /*加法，處理javascript在處理Float的問題*/
+        "addition": function (num1, num2) {
+            var r1, r2, m;
+            try { r1 = num1.toString().split(".")[1].length } catch (e) { r1 = 0 }
+            try { r2 = num2.toString().split(".")[1].length } catch (e) { r2 = 0 }
+            m = Math.pow(10, Math.max(r1, r2));
+            return (num1 * m + num2 * m) / m;
+        },
+        /*乘法*/
+        "multiplication": function (num1, num2) {
+            var m = 0, s1 = num1.toString(), s2 = num2.toString();
+            try { m += s1.split(".")[1].length } catch (e) { }
+            try { m += s2.split(".")[1].length } catch (e) { }
+            return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m)
+        },
+        /*除法*/
+        "division": function (num1, num2) {
+            var t1 = 0, t2 = 0, r1, r2;
+            try { t1 = num1.toString().split(".")[1].length } catch (e) { }
+            try { t2 = num2.toString().split(".")[1].length } catch (e) { }
+            with (Math) {
+                r1 = Number(num1.toString().replace(".", ""))
+                r2 = Number(num2.toString().replace(".", ""))
+                return (r1 / r2) * pow(10, t2 - t1);
+            }
+        }
     });
+
     $.fn.extend({
         /*table設定資料內容
          *  Prop
@@ -112,7 +140,7 @@
                         switch (t) {
                             case 1:
                                 itr.find("td").css({ "background-color": "#7495f4", "color": "#fff" });
-                                itr.find("td:last").prop("colspan", obj.th.length - obj.ths.th).addClass("l");
+                                itr.find("td:last").prop("colspan", obj.th.length - obj.ths.th.length + 1).addClass("l");
                                 break;
                         }
                         /*客制資料內的tr*/
