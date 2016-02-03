@@ -22,6 +22,7 @@
     <input type="hidden" id="discount" />
     <input type="hidden" id="fee" />
     <input type="hidden" id="tranfee" />
+    <input type="hidden" id="qty" />
     <form id="frmupupd">
         <input type="hidden" name="cSeq" id="cSeq" />
         <table>
@@ -74,11 +75,19 @@
 @section scripts {
     <script>
         var bs = null, ins = null;
-        function setTranType(o) {
+        function checkQty() {
+            var b = parseInt($("#cQty").totrim().val()) > parseInt($("#qty").val());
+            if (b) { $.alert("X2：賣出量不可大於庫存量!!!"); }
+            return b;
+        }
+
+        function setTranType(o, e) {
             var $t = $("#cAct"), isb = $.isNumeric(o);
             $t.getCodeOpt({ "cupid": isb ? "03001" : "01001", "done": function () { $t.val(o); } });
+            $.post('@Url.Content("~/Select/getStockQty")', { "id": e["cId"] }).done(function (x) { $("#qty").val(x.qty); });
             $("#cFee").prop("readonly", isb);
             $("#cQty,#cPrice,#cAct").unbind("change").change(function () {
+                if ($("#cAct :selected").val() == "S" && checkQty()) { $("#cQty").val(0); return; }
                 if ($.isTextEmpty($("#cQty,#cPrice"))) { $("#cFee").val(0); return; }
                 $("#cQty,#cPrice,#cAct").totrim();
                 var fee = 0, cost = $.multiplication($("#cPrice").val(), $("#cQty").val());
@@ -99,14 +108,6 @@
                         "title": n + "-" + o,
                         "th": [{ n: "分類", v: "cActName" }, { n: "數量(股)", v: "cQty", t: "num" }, { n: "成交價", v: "cPrice", t: "num" },
                             { n: "手續費", v: "cFee", t: "num" }, { n: "成交日", v: "cTranDt" },
-                            {
-                                n: "修改", t: "btn", f: function (e) {
-                                    var frm = $("#frmupupd");
-                                    for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
-                                    setTranType(e["cAct"]);
-                                    $("#dvupupd").dialogopen();
-                                }
-                            },
                             {
                                 n: "刪除", t: "btn", f: function (e, t) {
                                     var tr = $(t).parents("tr:first");
@@ -137,13 +138,13 @@
                     "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "目標(張)", v: "cTargetQty", t: "num" },
                         {
                             n: "交易", t: "btn", f: function (e) {
-                                setTranType("B");
+                                setTranType("B", e);
                                 btn(e);
                             }
                         },
                         {
                             n: "股息", t: "btn", f: function (e) {
-                                setTranType(1);
+                                setTranType(1, e);
                                 btn(e);
                             }
                         },

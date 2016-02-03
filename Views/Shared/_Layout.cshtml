@@ -77,7 +77,7 @@
             <div id="debug"></div>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang ver.2016020301
+            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang ver.2016020302
         </footer>
     </div>
     <script>
@@ -89,6 +89,8 @@
     <script>
         /*取得股票即時資料*/
         $.post('@Url.Content("~/Select/StockOnlin")');
+        /*Cookie只存30分鐘，超過自動refresh*/
+        setTimeout(function(){location.reload();}, @(csProp.CookiesLift)-1);
     </script>
 </body>
 </html>
