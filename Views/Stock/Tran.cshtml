@@ -88,6 +88,7 @@
             $("#cFee").prop("readonly", isb);
             $("#cQty,#cPrice,#cAct").unbind("change").change(function () {
                 if ($("#cAct :selected").val() == "S" && checkQty()) { $("#cQty").val(0); return; }
+                if ($("#cAct :selected").val() == "2") { $("#cPrice").val(0); return; }
                 if ($.isTextEmpty($("#cQty,#cPrice"))) { $("#cFee").val(0); return; }
                 $("#cQty,#cPrice,#cAct").totrim();
                 var fee = 0, cost = $.multiplication($("#cPrice").val(), $("#cQty").val());
@@ -112,10 +113,11 @@
                                 n: "刪除", t: "btn", f: function (e, t) {
                                     var tr = $(t).parents("tr:first");
                                     if (tr.find(":checkbox[name='isselect']").prop("checked")) {
-                                        $.post('@Url.Content("~/Insert/setAlimonyDelete")', { o: parseInt(tr.find("[name='cSeq']").val()) })
+                                        $.post('@Url.Content("~/Insert/setStockTranDelete")', { o: parseInt(tr.find("[name='cSeq']").val()) })
                                             .done(function (q) {
-                                                getData();
-                                                $.alert("Y1：刪除" + (q.ok ? "成功" : "失敗") + "!!!");
+                                                $("#stock").totrimupper().val() == "" ? getTarget() : $("#bsubmit").click();
+                                                getTran(o, n);
+                                                $.alert(q.msg);
                                             });
                                     } else { $.alert("X1：「選」未勾選，該項無法刪除!!!"); return; }
                                 }
@@ -136,18 +138,8 @@
                 $("#dvdata").tableData({
                     "title": "股票列表",
                     "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "目標(張)", v: "cTargetQty", t: "num" },
-                        {
-                            n: "交易", t: "btn", f: function (e) {
-                                setTranType("B", e);
-                                btn(e);
-                            }
-                        },
-                        {
-                            n: "股息", t: "btn", f: function (e) {
-                                setTranType(1, e);
-                                btn(e);
-                            }
-                        },
+                        { n: "交易", t: "btn", f: function (e) { setTranType("B", e); btn(e); } },
+                        { n: "股息", t: "btn", f: function (e) { setTranType(1, e); btn(e); } },
                         {
                             n: "查詢", t: "btn",
                             f: function (e, t) {
@@ -161,6 +153,8 @@
             }
             else { if (!ys) { $.alert(x.msg); } }
         }
+
+        function getTarget() { $.post('@Url.Content("~/Select/getStockTarget")').done(function (x) { getData(x, true); }); }
 
         $(window).load(function () {
             /*取得買賣設定*/
@@ -178,7 +172,7 @@
                 }
             });
             /*取得有設定目標量但未達標的股票資料*/
-            $.post('@Url.Content("~/Select/getStockTarget")').done(function (x) { getData(x, true); });
+            getTarget();
             /*合約/到期日*/
             $("#cTranDt").datepickeropen();
             /*增修重設*/
@@ -187,6 +181,20 @@
             $("#breset").click(function () { $("#stock").val(""); });
             /*查詢*/
             $("#bsubmit").click(function () { $.post('@Url.Content("~/Select/getStockMultiId")', { "str": $("#stock").totrimupper().val() }).done(function (x) { getData(x, false); }); });
+            /*新增確認*/
+            $("#bupd").click(function () {
+                if ($.isNoneEmpty($("#frmupupd input:visible"))) { return; }
+                if ($("#cAct :selected").val() == "S" && checkQty()) { $("#cQty").val(0); return; }
+                if (parseInt($("#cQty").val()) <= 0) { $.alert("X1：數量必需大於零!!!"); return; }
+                if ($("#cAct :selected").val() == "2") { $("#cPrice").val(0); return; }
+                $.post('@Url.Content("~/Insert/setStockTranInsert")', $("#frmupupd").serialize())
+                    .done(function (q) {
+                        $("#stock").totrimupper().val() == "" ? getTarget() : $("#bsubmit").click();
+                        getTran($("#frmupupd input[name='cId']").val(), "");
+                        $.alert(q.msg);
+                    });
+                $("#dvupupd").dialog("close");
+            });
         });
     </script>
 }

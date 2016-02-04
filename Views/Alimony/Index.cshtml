@@ -145,7 +145,7 @@
                                     $.post('@Url.Content("~/Insert/setAlimonyDelete")', { o: parseInt(tr.find("[name='cSeq']").val()) })
                                             .done(function (q) {
                                                 getData();
-                                                $.alert("Y1：刪除" + (q.ok ? "成功" : "失敗") + "!!!");
+                                                $.alert(q.msg);
                                             });
                                 } else { $.alert("X1：「選」未勾選，該項無法刪除!!!"); return; }
                             }
