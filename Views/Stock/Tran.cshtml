@@ -71,24 +71,34 @@
     ◆ 經查詢，取得股票資料後，方可新增交易資料。
     <br />
     ◆ 若查詢無股票時，需先新增股票。
+    <br />
+    ◆ 配息權時，直接輸入取得的「總量」，或「總額」。
 </div>
 @section scripts {
     <script>
         var bs = null, ins = null;
-        function checkQty() {
-            var b = parseInt($("#cQty").totrim().val()) > parseInt($("#qty").val());
-            if (b) { $.alert("X2：賣出量不可大於庫存量!!!"); }
-            return b;
+        function checkQty(o) {
+            var str = $("#cAct :selected").val();
+            if (o && "1" != str && parseInt($("#cQty").val()) <= 0) { $.alert("X1：數量必需大於零!!!"); return; }
+            if (o && "2" != str && parseInt($("#cPrice").val()) <= 0) { $.alert("X2：成交價必需大於零!!!"); return; }
+            switch (str) {
+                case "1": $("#cQty").val(0); return false; break;
+                case "2": $("#cPrice").val(0); return false; break;
+                case "S":
+                    var b = parseInt($("#cQty").totrim().val()) > parseInt($("#qty").val());
+                    if (b) { $.alert("X2：賣出量不可大於庫存量!!!"); }
+                    return b;
+                    break;
+            }
         }
 
         function setTranType(o, e) {
             var $t = $("#cAct"), isb = $.isNumeric(o);
-            $t.getCodeOpt({ "cupid": isb ? "03001" : "01001", "done": function () { $t.val(o); } });
+            $t.getCodeOpt({ "cupid": isb ? "03001" : "01001", "done": function () { $t.val(o); $("#cAct").change(); } });
             $.post('@Url.Content("~/Select/getStockQty")', { "id": e["cId"] }).done(function (x) { $("#qty").val(x.qty); });
             $("#cFee").prop("readonly", isb);
             $("#cQty,#cPrice,#cAct").unbind("change").change(function () {
-                if ($("#cAct :selected").val() == "S" && checkQty()) { $("#cQty").val(0); return; }
-                if ($("#cAct :selected").val() == "2") { $("#cPrice").val(0); return; }
+                if (checkQty(false)) { return; }
                 if ($.isTextEmpty($("#cQty,#cPrice"))) { $("#cFee").val(0); return; }
                 $("#cQty,#cPrice,#cAct").totrim();
                 var fee = 0, cost = $.multiplication($("#cPrice").val(), $("#cQty").val());
@@ -184,9 +194,7 @@
             /*新增確認*/
             $("#bupd").click(function () {
                 if ($.isNoneEmpty($("#frmupupd input:visible"))) { return; }
-                if ($("#cAct :selected").val() == "S" && checkQty()) { $("#cQty").val(0); return; }
-                if (parseInt($("#cQty").val()) <= 0) { $.alert("X1：數量必需大於零!!!"); return; }
-                if ($("#cAct :selected").val() == "2") { $("#cPrice").val(0); return; }
+                if (checkQty(true)) { return; }
                 $.post('@Url.Content("~/Insert/setStockTranInsert")', $("#frmupupd").serialize())
                     .done(function (q) {
                         $("#stock").totrimupper().val() == "" ? getTarget() : $("#bsubmit").click();
