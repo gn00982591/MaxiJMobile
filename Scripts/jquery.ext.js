@@ -235,13 +235,15 @@
         "dialogopen": function () { $(this).dialog({ autoOpen: true, modal: true, width: "auto" }); return $(this); },
         /*datepicker*/
         "datepickeropen": function () {
-            $(this).datepicker({
-                showOtherMonths: true,
-                selectOtherMonths: true,
-                changeMonth: true,
-                changeYear: true,
-                dateFormat: "yy/mm/dd"
-            });
+            if (!isChrome) {
+                $(this).datepicker({
+                    showOtherMonths: true,
+                    selectOtherMonths: true,
+                    changeMonth: true,
+                    changeYear: true,
+                    dateFormat: "yy/mm/dd"
+                });
+            }
             return $(this);
         },
         /*select tCode*/

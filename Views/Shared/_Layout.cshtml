@@ -77,11 +77,12 @@
             <div id="debug"></div>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang ver.2016020501
+            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang ver.2016020502
         </footer>
     </div>
     <script>
         var preloadersec = @ViewBag.preloader;
+        var isChrome=("CHROME"=="@(br.Browser.ToUpper())");
     </script>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
