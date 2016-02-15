@@ -121,6 +121,11 @@
                                     if (ee.elename != null && ee.elename != "") { btn.prop("name", ee.elename); }
                                     td.addClass("c").append(btn);
                                     break;
+                                case "txt-week":
+                                    if (["星期六", "星期五"].indexOf(e[ee.v]) >= 0) { itr.css("background-color", "red"); }
+                                    if (e[ee.v] == "星期日") { itr.css("background-color", "green"); }
+                                    td.append(e[ee.v])
+                                    break;
                                 case "txt-c": td.addClass("c").append(e[ee.v]); break;
                                 case "txt-most":
                                     var cstr = 5;
