@@ -42,7 +42,15 @@
 </div>
 @section scripts {
     <script>
-        var obj = { "title": "哲休假表", "th": [{ n: "時間", v: "d" }, { n: "星期", v: "w", t: "txt-week" }, { n: "休", v: "i" }], "data": null };
+        var obj = {
+            "title": "哲休假表",
+            "th": [{ n: "時間", v: "d" }, { n: "星期", v: "w" }, { n: "休", v: "i" }],
+            "data": null,
+            "setTr": function (itr, e) {
+                if (["星期六", "星期五"].indexOf(e.w) >= 0) { itr.css("background-color", "#ff3232"); }
+                if (e.w == "星期日") { itr.css("background-color", "#2ffe2f"); }
+            }
+        };
         $(window).load(function () {
             $("#bsubmit").click(function () {
                 $.post('@Url.Content("~/Way/WaizuResult")', $("#frmup").serialize()).done(function (q) {
