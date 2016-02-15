@@ -1,0 +1,34 @@
+﻿
+<div class="searcher">
+    <div>
+        <form id="frmup">
+            <table id="tbup">
+                <tr>
+                    <th>年月</th>
+                    <td>
+                        <select name="y">
+                            <option value="@(DateTime.Now.Year - 1)">@(DateTime.Now.Year - 1)年</option>
+                            <option value="@(DateTime.Now.Year )" selected="selected">@(DateTime.Now.Year)年</option>
+                            <option value="@(DateTime.Now.Year + 1)">@(DateTime.Now.Year + 1)年</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select name="m">
+                            @{
+                                for (var i = 1; i <= 12; i++)
+                                {
+                                    <option value="@(i)" @{if (DateTime.Now.Month == i) { @("selected"); }}>@(i)月</option>
+                                }
+                            }
+                        </select>
+
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div class="dvbtn">
+            <button id="bsubmit" type="button">查詢</button>
+            <button id="breset" type="reset">重設</button>
+        </div>
+    </div>
+</div>
