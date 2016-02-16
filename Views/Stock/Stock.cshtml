@@ -1,7 +1,6 @@
 ﻿@using MaxiJMobile.Models;
 <div class="searcher">
     <div>
-        <a href="#" id="aup">新增</a>
         <a href="#" id="aonline">即時</a>
         <form id="frmup">
             <table id="tbup">
@@ -19,40 +18,68 @@
         </div>
     </div>
 </div>
-<div id="dvdata" class="data"></div>
+<div class="data">
+    <table>
+        <tr>
+            <td id="dvdata"></td>
+            <td id="dvtran"></td>
+        </tr>
+    </table>
+</div>
 @section scripts {
     <script>
-    var chardata = null, updateitem = null, dv = null;
-    function getData(isg) {
-        function ok(d) {
-            var st = $("#stock").totrimupper().val();
-            if (isg && st != "") {
-                chardata = $.grep(d, function (a) { return a.cId.indexOf(st) >= 0 || a.cName.indexOf(st) >= 0; });
+        var chardata = null, updateitem = null, dv = null;
+        function getTran(o, n) {
+            $.post('@Url.Content("~/Select/getStockTran")', { "id": o })
+                .done(function (x) {
+                    $("#dvtran").tableData({
+                        "title": n + "-" + o,
+                        "th": [{ n: "分類", v: "cActName" }, { n: "數量(股)", v: "cQty", t: "num" }, { n: "成交價", v: "cPrice", t: "num" },
+                            { n: "手續費", v: "cFee", t: "num" }, { n: "成交日", v: "cTranDt" }],
+                        "hidden": ["cSeq", "cId", "cAct"],
+                        "data": x
+                    });
+                });
+        }
+
+        function getData(isg) {
+            function ok(d) {
+                var st = $("#stock").totrimupper().val();
+                if (isg && st != "") {
+                    chardata = $.grep(d, function (a) { return a.cId.indexOf(st) >= 0 || a.cName.indexOf(st) >= 0; });
+                }
+                else { chardata = d; }
+                $("#dvdata").tableData({
+                    "title": "股票列表",
+                    "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存(張)", v: "cQty", t: "num" },
+                        { n: "均價", v: "cAvgPrice", t: "num" }, { n: "收價", v: "cPrice", t: "num" },
+                        { n: "損益", v: "cGet", t: "num-rg" }, { n: "累計息", v: "cIns", t: "num" },
+                        { n: "成本", v: "cCost", t: "num" }, { n: "目前價值", v: "cValue", t: "num" },
+                        {
+                            n: "查詢", t: "btn",
+                            f: function (e, t) {
+                                var g = $(t).parents("tr:first");
+                                getTran(g.find("input[name='cId']").totrimupper().val(), g.find("input[name='cName']").totrimupper().val());
+                            }
+                        },
+                        { n: "收價時間", v: "cPriceDt", t: "txt-most" }],
+                    "hidden": ["cId", "cName"],
+                    "data": chardata
+                });
             }
-            else { chardata = d; }
-            $("#dvdata").tableData({
-                "title": "股票列表",
-                "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存(張)", v: "cQty", t: "num" },
-                    { n: "均價", v: "cAvgPrice", t: "num" }, { n: "收價", v: "cPrice", t: "num" },
-                    { n: "損益", v: "cGet", t: "num-rg" }, { n: "累計息", v: "cIns", t: "num" },
-                    { n: "成本", v: "cCost", t: "num" }, { n: "目前價值", v: "cValue", t: "num" },
-                    { n: "收價時間", v: "cPriceDt" }],
-                "data": chardata
-            });
+            if (isg) { ok(dv); }
+            else {
+                $.post('@Url.Content("~/Select/getStockHasTran")').done(function (x) {
+                    dv = x;
+                    updateitem = x[0];
+                    ok(x);
+                });
+            }
         }
-        if (isg) { ok(dv); }
-        else {
-            $.post('@Url.Content("~/Select/getStockHasTran")').done(function (x) {
-                dv = x;
-                updateitem = x[0];
-                ok(x);
-            });
-        }
-    }
-    $(window).load(function () {
-        getData();
-        /*取得即時資料*/
-        $("#aonline").click(function () { $.post('@Url.Content("~/Select/StockOnlin")').done(function (x) { getData(); }); });
-    });
+        $(window).load(function () {
+            getData();
+            /*取得即時資料*/
+            $("#aonline").click(function () { $.post('@Url.Content("~/Select/StockOnlin")').done(function (x) { getData(); }); });
+        });
     </script>
 }
