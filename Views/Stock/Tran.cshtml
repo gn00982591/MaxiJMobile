@@ -31,7 +31,7 @@
                 <td><input id="cId" name="cId" type="text" maxlength="10" size="11" readonly="readonly" /></td>
             </tr>
             <tr>
-                <th></th>
+                <th>名稱</th>
                 <td name="cName"></td>
             </tr>
             <tr>
@@ -143,6 +143,7 @@
                 function btn(e) {
                     $("#reset").click();
                     $("#frmupupd input[name='cId']").val(e["cId"]);
+                    $("#frmupupd td[name='cName']").text(e["cName"]);
                     $("#dvupupd").dialogopen();
                 }
                 $("#dvdata").tableData({

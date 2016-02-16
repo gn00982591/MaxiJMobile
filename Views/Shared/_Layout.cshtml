@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Just Moto Story" />
     <link href="~/Content/icon.ico" rel="shortcut icon" />
-    <title>@ViewContext.TitleName() - Moto Sotry</title>
+    <title>@(ViewContext.TitleName()) - Moto Sotry</title>
     @using MaxiJMobile.Models;
     @{
         /*版本判斷後，對Jquery不支援的瀏灠器轉到告示畫面*/
@@ -48,7 +48,7 @@
                     @{
                         if (!csProp.isCurrentUser && ViewContext.ControllerName().ToStringUpper() != "OAUTH")
                         { Response.Redirect("/OAuth/Index"); }
-                        
+
                         var name = ViewContext.ControllerName().ToStringUpper();
                         var vname = ViewContext.ActionName().ToStringUpper();
                         if (!(name == "WAY" && vname == "INDEX"))
@@ -78,12 +78,12 @@
             <div id="debug"></div>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang ver.2016021601
+            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang ver.2016021602
         </footer>
     </div>
     <script>
         var preloadersec = @ViewBag.preloader;
-        var isChrome=("CHROME"=="@(br.Browser.ToUpper())");
+        var isChrome = ("CHROME"=="@(br.Browser.ToUpper())");
     </script>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
@@ -91,8 +91,8 @@
     <script>
         /*取得股票即時資料*/
         $.post('@Url.Content("~/Select/StockOnlin")');
-        /*Cookie只存30分鐘，超過自動refresh*/
-        setTimeout(function(){location.reload();}, @(csProp.CookiesLift)-1);
+        /*Cookie只存超過*/
+        setTimeout(function(){$("*").click(function(){location.reload();});}, @(csProp.CookiesLift)-1);
     </script>
 </body>
 </html>
