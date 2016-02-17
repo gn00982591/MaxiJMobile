@@ -191,7 +191,7 @@
             /*重設*/
             $("#breset").click(function () { $("#stock").val(""); });
             /*查詢*/
-            $("#bsubmit").click(function () { $.post('@Url.Content("~/Select/getStockMultiId")', { "str": $("#stock").totrimupper().val() }).done(function (x) { getData(x, false); }); });
+            $("#bsubmit").click(function () { $("#dvtran").empty(); $.post('@Url.Content("~/Select/getStockMultiId")', { "str": $("#stock").totrimupper().val() }).done(function (x) { getData(x, false); }); });
             /*新增確認*/
             $("#bupd").click(function () {
                 if ($.isNoneEmpty($("#frmupupd input:visible"))) { return; }

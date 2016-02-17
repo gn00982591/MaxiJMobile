@@ -31,6 +31,7 @@
         var chardata = null, updateitem = null, dv = null;
         function getData(isg) {
             function ok(d) {
+                $("#dvtran").empty();
                 var st = $("#stock").totrimupper().val();
                 if (isg && st != "") {
                     chardata = $.grep(d, function (a) { return a.cId.indexOf(st) >= 0 || a.cName.indexOf(st) >= 0; });
@@ -72,6 +73,10 @@
         }
         $(window).load(function () {
             getData();
+            /*查詢*/
+            $("#bsubmit").click(function () { getData(true); });
+            /*重設*/
+            $("#breset").click(function () { $("#stock").val(""); });
             /*取得即時資料*/
             $("#aonline").click(function () { $.post('@Url.Content("~/Select/StockOnlin")').done(function (x) { getData(); }); });
         });
