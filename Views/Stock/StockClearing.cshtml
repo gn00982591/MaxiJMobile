@@ -1,7 +1,6 @@
 ﻿@using MaxiJMobile.Models;
 <div class="searcher">
     <div>
-        <a href="#" id="aonline">即時</a>
         <form id="frmup">
             <table id="tbup">
                 <tr>
@@ -28,7 +27,7 @@
 </div>
 @section scripts {
     <script>
-        var chardata = null, updateitem = null, dv = null;
+        var chardata = null, dv = null;
         function getData(isg) {
             function ok(d) {
                 var st = $("#stock").totrimupper().val();
@@ -38,14 +37,12 @@
                 else { chardata = d; }
                 $("#dvdata").tableData({
                     "title": "股票列表",
-                    "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存(張)", v: "cQty", t: "num" },
-                        { n: "均價", v: "cAvgPrice", t: "num" }, { n: "收價", v: "cPrice", t: "num" },
-                        { n: "損益", v: "cGet", t: "num-rg" }, { n: "累計息", v: "cIns", t: "num" },
-                        { n: "成本", v: "cCost", t: "num" }, { n: "目前價值", v: "cValue", t: "num" },
+                    "th": [{ n: "序號", v: "cSeq" }, { n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "損益", v: "cCost", t: "num-rg" },
+                        { n: "批次", v: "cBat" }, { n: "種類", v: "cTypeName" },
                         {
                             n: "查詢", t: "btn",
                             f: function (e, t) {
-                                $.post('@Url.Content("~/Select/getStockTran")', { "id": e["cId"] })
+                                $.post('@Url.Content("~/Select/getStockClearingTran")', { "id": e["cSeq"] })
                                     .done(function (x) {
                                         $("#dvtran").tableData({
                                             "title": e["cName"] + "-" + e["cId"],
@@ -56,15 +53,14 @@
                                         });
                                     });
                             }
-                        },
-                        { n: "收價時間", v: "cPriceDt", t: "txt-most" }],
-                    "hidden": ["cId", "cName"],
+                        }],
+                    "hidden": ["cSeq"],
                     "data": chardata
                 });
             }
             if (isg) { ok(dv); }
             else {
-                $.post('@Url.Content("~/Select/getStockHasTran")').done(function (x) {
+                $.post('@Url.Content("~/Select/getStockClearing")').done(function (x) {
                     dv = x;
                     ok(x);
                 });
@@ -72,8 +68,6 @@
         }
         $(window).load(function () {
             getData();
-            /*取得即時資料*/
-            $("#aonline").click(function () { $.post('@Url.Content("~/Select/StockOnlin")').done(function (x) { getData(); }); });
         });
     </script>
 }
