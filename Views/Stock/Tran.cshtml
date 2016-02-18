@@ -148,7 +148,7 @@
                 }
                 $("#dvdata").tableData({
                     "title": "股票列表",
-                    "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "目標(張)", v: "cTargetQty", t: "num" },
+                    "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "目標差", v: "cMust", t: "num" },
                         { n: "交易", t: "btn", f: function (e) { setTranType("B", e); btn(e); } },
                         { n: "股息", t: "btn", f: function (e) { setTranType(1, e); btn(e); } },
                         {
@@ -157,7 +157,7 @@
                                 var g = $(t).parents("tr:first");
                                 getTran(g.find("input[name='cId']").totrimupper().val(), g.find("input[name='cName']").totrimupper().val());
                             }
-                        }],
+                        }, { n: "目標(張)", v: "cTargetQty", t: "num" }],
                     "hidden": ["cId", "cName"],
                     "data": x.data
                 });
