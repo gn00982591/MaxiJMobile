@@ -18,10 +18,10 @@
     </div>
 </div>
 <div id="dvupupd" class="upd" title="增修">
-    <input type="hidden" id="minfee" />
-    <input type="hidden" id="discount" />
-    <input type="hidden" id="fee" />
-    <input type="hidden" id="tranfee" />
+    <input type="hidden" id="minfee" value="@(StockFee.minfee)" />
+    <input type="hidden" id="discount" value="@(StockFee.discount)" />
+    <input type="hidden" id="fee" value="@(StockFee.fee)" />
+    <input type="hidden" id="tranfee" value="@(StockFee.tranfee)" />
     <input type="hidden" id="qty" />
     <form id="frmupupd">
         <input type="hidden" name="cSeq" id="cSeq" />
@@ -101,14 +101,7 @@
                 if (checkQty(false)) { return; }
                 if ($.isTextEmpty($("#cQty,#cPrice"))) { $("#cFee").val(0); return; }
                 $("#cQty,#cPrice,#cAct").totrim();
-                var fee = 0, cost = $.multiplication($("#cPrice").val(), $("#cQty").val());
-                if (!isb) {
-                    fee = Math.ceil($.multiplication($.multiplication(cost, $("#fee").val()), $("#discount").val())),
-                    mife = parseInt($("#minfee").val());
-                    fee = (fee >= mife ? fee : mife);
-                    if ($("#cAct :selected").val() == "S") { fee += Math.ceil($.multiplication(cost, $("#tranfee").val())); }
-                }
-                $("#cFee").val(fee);
+                $("#cFee").val($.getStockFee({ "price": $("#cPrice").val(), qty: $("#cQty").val(), "type": $("#cAct :selected").val() }));
             });
         }
 
@@ -168,20 +161,6 @@
         function getTarget() { $.post('@Url.Content("~/Select/getStockTarget")').done(function (x) { getData(x, true); }); }
 
         $(window).load(function () {
-            /*取得買賣設定*/
-            $.getCode({
-                "cupid": "03003",
-                done: function (x) {
-                    for (var i in x) {
-                        switch (x[i]["cId"]) {
-                            case "03013":/*每筆最低手續費*/ $("#minfee").val(x[i]["cKey"]); break;
-                            case "03023":/*每筆折扣*/ $("#discount").val(x[i]["cKey"]); break;
-                            case "03033":/*股票交割手續費計算*/ $("#fee").val(x[i]["cKey"]); break;
-                            case "03043":/*證卷交易稅*/ $("#tranfee").val(x[i]["cKey"]); break;
-                        }
-                    }
-                }
-            });
             /*取得有設定目標量但未達標的股票資料*/
             getTarget();
             /*合約/到期日*/

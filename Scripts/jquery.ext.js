@@ -23,6 +23,19 @@
         },
         /*input空白不處理判斷*/
         "isTextEmpty": function (o) { return o.totrim().filter(function (i) { return $(this).val() == ""; }).length; },
+        /*計算股票手續費*/
+        "getStockFee": function (o) {
+            if ($.isEmptyObject(o)) { $.alert("X1：傳入資料為空!!!"); return 0; }
+            if ($.isEmptyObject(stockfee) || stockfee.minfee == "") { $.alert("X2：股票買賣設定取未取得!!!"); return 0; }
+            var fee = 0, cost = $.multiplication(o.price, o.qty);
+            if (!$.isNumeric(o.type)) {
+                fee = Math.ceil($.multiplication($.multiplication(cost, stockfee.fee), stockfee.discount));
+                mife = parseInt(stockfee.minfee);
+                fee = (fee >= mife ? fee : mife);
+                if (o.type == "S") { fee += Math.ceil($.multiplication(cost, stockfee.tranfee)); }
+            }
+            return fee;
+        },
         /*取得正在運作的子頁tab*/
         "getTabId": function () { return $(".searcher a").filter(function () { return $(this).hasClass(aselect); }).prop("id"); },
         /*加法，處理javascript在處理Float的問題*/
@@ -288,7 +301,7 @@
 var aselect = "hvr-bounce-to-bottom-selected";
 
 $(window).load(function () {
-    preloadersec = preloadersec <= 0 ? 500 : preloadersec;
+    preloadersec = preloadersec <= 0 ? 400 : preloadersec;
     $('.preloader__img').fadeOut(preloadersec);
     setTimeout(function () { $('.preloader').addClass('active').delay(preloadersec * 2).fadeOut(preloadersec); }, (preloadersec * 2));
     /*a tab選取時class更換*/

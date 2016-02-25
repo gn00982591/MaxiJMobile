@@ -13,7 +13,7 @@
         var br = Request.Browser;
         if (br.Browser.ToUpper().Contains("IE") && br.MajorVersion < 9) { Response.Redirect("/WAY/NonSupport"); }
         /*載入動畫的執行時間(毫秒)*/
-        ViewBag.preloader = (ViewContext.ControllerName().ToStringUpper() == "WAY" && ViewContext.ActionName().ToStringUpper() == "INDEX") ? 500 : 100;
+        ViewBag.preloader = (ViewContext.ControllerName().ToStringUpper() == "WAY" && ViewContext.ActionName().ToStringUpper() == "INDEX") ? 400 : 100;
     }
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/fontawesome")
@@ -78,12 +78,20 @@
             <div id="debug"></div>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang ver.2016021801
+            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang ver.2016022501
         </footer>
     </div>
     <script>
         var preloadersec = @ViewBag.preloader;
+        /*是否為Chrome*/
         var isChrome = ("CHROME"=="@(br.Browser.ToUpper())");
+        /*股票買賣設定*/
+        var stockfee = {
+            "minfee":"@(StockFee.minfee)",
+            "discount":"@(StockFee.discount)",
+            "fee":"@(StockFee.fee)",
+            "tranfee":"@(StockFee.tranfee)"
+        };
     </script>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryui")
