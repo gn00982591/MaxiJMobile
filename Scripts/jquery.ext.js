@@ -69,20 +69,22 @@
     $.fn.extend({
         /*table設定資料內容
          *  Prop
-         *      title   :string,    設定資料表的 Title
-         *      data    :json,      資料陣列
-         *      th      :[],        資料內容處理
-         *          n   :string,    表格抬頭文字
-         *          v   :string,    資料內容的col
-         *          t   :string,    資料格式，或產生形式
-         *          f   :function,  資料格式內，對應指定產生形式而綁定執行功能
-         *      hidden  :[],        隱藏資料
-         *      ths     :{},        資料內容分二階處理
-         *          k   :string,    第一層的主索引
-         *          v   :string,    主索引取出的數值    
-         *          pk  :string,    主索引
-         *          fk  :string,    對應主索引的外部索引
-         *          th  :[],        設定方式與 Prop 的 th 相同
+         *      title           :string,    設定資料表的 Title
+         *      data            :json,      資料陣列
+         *      th              :[],        資料內容處理
+         *          n           :string,    表格抬頭文字
+         *          v           :string,    資料內容的col
+         *          t           :string,    資料格式，或產生形式
+         *          f           :function,  資料格式內，對應指定產生形式而綁定執行功能
+         *      hidden          :[],        隱藏資料
+         *      msg             :[],        訊息欄
+         *      isnonebotton    :bool,      資料下方是否產生大區間
+         *      ths             :{},        資料內容分二階處理
+         *          k           :string,    第一層的主索引
+         *          v           :string,    主索引取出的數值    
+         *          pk          :string,    主索引
+         *          fk          :string,    對應主索引的外部索引
+         *          th          :[],        設定方式與 Prop 的 th 相同
          *  Func
          *      setTr   :客制資料內的tr
          */
@@ -92,9 +94,9 @@
                 if ($.isEmptyObject(t)) { $.alert("XX：綁定的 Element 不存在!!!"); return; }
                 t.empty();
                 /*設定資料表的 Title*/
-                if (obj.title != "") { t.append("<span class='title'>" + obj.title + "</span>"); }
-                var tb = $("<table/>", { "class": "main" }),
-                tr = $("<tr/>");
+                if (obj.title != "" && !$.isEmptyObject(obj.title)) { t.append("<span class='title'>" + obj.title + "</span>"); }
+                var tb = $("<table/>", { "class": "main" }), tr = $("<tr/>");
+                if (obj.isnonebotton) { tb.css("margin-bottom", "20px"); }
                 /*欄位名稱*/
                 $(obj.th).each(function (i, e) { tr.append("<th>" + e.n + "</th>"); });
                 tb.append(tr);
@@ -192,6 +194,11 @@
                             });
                         }
                     }
+                }
+                if (!$.isEmptyObject(obj.msg) && obj.msg.length) {
+                    var msgtb = $("<td/>", { colspan: obj.th.length });
+                    for (var xct = 0; xct < obj.msg.length; xct++) { msgtb.append("◆ " + obj.msg[xct] + "<br/>"); }
+                    tb.append($("<tr/>").append(msgtb));
                 }
                 t.css("vertical-align", "top").append(tb);
             });

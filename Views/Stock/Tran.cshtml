@@ -28,7 +28,9 @@
         <table>
             <tr>
                 <th>代號</th>
-                <td><input id="cId" name="cId" type="text" maxlength="10" size="11" readonly="readonly" /></td>
+                <td>
+                    <input id="cId" name="cId" type="text" maxlength="10" size="11" readonly="readonly" />
+                </td>
             </tr>
             <tr>
                 <th>名稱</th>
@@ -36,23 +38,33 @@
             </tr>
             <tr>
                 <th>分類</th>
-                <td><select id="cAct" name="cAct"></select></td>
+                <td>
+                    <select id="cAct" name="cAct"></select>
+                </td>
             </tr>
             <tr>
                 <th>數量(股)</th>
-                <td><input id="cQty" name="cQty" type="number" maxlength="10" size="11" placeholder="數量(股)" /></td>
+                <td>
+                    <input id="cQty" name="cQty" type="number" maxlength="10" size="11" placeholder="數量(股)" />
+                </td>
             </tr>
             <tr>
                 <th>成交價</th>
-                <td><input id="cPrice" name="cPrice" type="number" step="0.0001" maxlength="8" size="9" placeholder="成交價" /></td>
+                <td>
+                    <input id="cPrice" name="cPrice" type="number" step="0.0001" maxlength="8" size="9" placeholder="成交價" />
+                </td>
             </tr>
             <tr>
                 <th>手續費</th>
-                <td><input id="cFee" name="cFee" type="number" maxlength="8" size="9" placeholder="手續費" value="0" /></td>
+                <td>
+                    <input id="cFee" name="cFee" type="number" maxlength="8" size="9" placeholder="手續費" value="0" />
+                </td>
             </tr>
             <tr>
                 <th>成交日</th>
-                <td><input id="cTranDt" name="cTranDt" type="date" maxlength="10" size="12" placeholder="成交日" /></td>
+                <td>
+                    <input id="cTranDt" name="cTranDt" type="date" maxlength="10" size="12" placeholder="成交日" />
+                </td>
             </tr>
         </table>
         <div class="dvupbtn">
@@ -68,11 +80,6 @@
             <td id="dvtran"></td>
         </tr>
     </table>
-    ◆ 經查詢，取得股票資料後，方可新增交易資料。
-    <br />
-    ◆ 若查詢無股票時，需先新增股票。
-    <br />
-    ◆ 配息權時，直接輸入取得的「總量」，或「總額」。
 </div>
 @section scripts {
     <script>
@@ -152,7 +159,10 @@
                             }
                         }, { n: "目標(張)", v: "cTargetQty", t: "num" }],
                     "hidden": ["cId", "cName"],
-                    "data": x.data
+                    "data": x.data,
+                    "msg": ["經查詢，取得股票資料後，方可新增交易資料。",
+                        "若查詢無股票時，需先新增股票。",
+                        "配息權時，直接輸入取得的「總量」，或「總額」。"]
                 });
             }
             else { if (!ys) { $.alert(x.msg); } }

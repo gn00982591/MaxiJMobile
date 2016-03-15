@@ -21,15 +21,18 @@
 <div class="data">
     <table>
         <tr>
+            <td id="dvcou" colspan="2"></td>
+        </tr>
+        <tr>
             <td id="dvdata"></td>
             <td id="dvtran"></td>
         </tr>
     </table>
-    ◆ 成本的計算都有加入剩下庫存賣出的手續費。
+    
 </div>
 @section scripts {
     <script>
-        var chardata = null, updateitem = null, dv = null;
+        var chardata = null, dv = null;
         function getData(isg) {
             function ok(d) {
                 $("#dvtran").empty();
@@ -40,10 +43,11 @@
                 else { chardata = d; }
                 $("#dvdata").tableData({
                     "title": "股票列表",
+                    "msg": ["成本的計算都有加入剩下庫存賣出的手續費。"],
                     "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存(張)", v: "cQty", t: "num" },
                         { n: "均價", v: "cAvgPrice", t: "num" }, { n: "收價", v: "cPrice", t: "num" },
                         { n: "損益", v: "cGet", t: "num-rg" }, { n: "累計息", v: "cIns", t: "num" },
-                        { n: "成本", v: "cCost", t: "num" }, { n: "目前價值", v: "cValue", t: "num" },
+                        { n: "成本", v: "cCost", t: "num" }, { n: "現值", v: "cValue", t: "num" },
                         {
                             n: "查詢", t: "btn",
                             f: function (e, t) {
@@ -69,6 +73,17 @@
                 $.post('@Url.Content("~/Select/getStockHasTran")').done(function (x) {
                     dv = x;
                     ok(x);
+                    var dxv = { tcost: 0, tval: 0,tins:0 };
+                    for (var g in x) {
+                        dxv.tcost = $.addition(dxv.tcost, x[g]["cCost"]);
+                        dxv.tval = $.addition(dxv.tval, x[g]["cValue"]);
+                        dxv.tins = $.addition(dxv.tins, x[g]["cIns"]);
+                    }
+                    $("#dvcou").tableData({
+                        isnonebotton: true,
+                        "th": [{ n: "總成本", v: "tcost", t: "num" }, { n: "總現值", v: "tval", t: "num" }, { n: "總計息", v: "tins", t: "num" }],
+                        "data": dxv
+                    });
                 });
             }
         }
