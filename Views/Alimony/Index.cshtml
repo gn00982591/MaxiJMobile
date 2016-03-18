@@ -10,27 +10,39 @@
         <table>
             <tr>
                 <th>名稱</th>
-                <td><input id="cName" name="cName" type="text" maxlength="20" size="12" placeholder="名稱" /></td>
+                <td>
+                    <input id="cName" name="cName" type="text" maxlength="20" size="12" placeholder="名稱" />
+                </td>
             </tr>
             <tr>
                 <th>收支</th>
-                <td><select id="cType" name="cType"></select></td>
+                <td>
+                    <select id="cType" name="cType"></select>
+                </td>
             </tr>
             <tr>
                 <th>分類</th>
-                <td><select id="cTypeDesc" name="cTypeDesc"></select></td>
+                <td>
+                    <select id="cTypeDesc" name="cTypeDesc"></select>
+                </td>
             </tr>
             <tr>
                 <th>金額</th>
-                <td><input id="cAmount" name="cAmount" type="number" maxlength="18" size="12" placeholder="金額" /></td>
+                <td>
+                    <input id="cAmount" name="cAmount" type="number" maxlength="18" size="12" placeholder="金額" />
+                </td>
             </tr>
             <tr>
                 <th>基期</th>
-                <td><select id="cBaseDtType" name="cBaseDtType"></select></td>
+                <td>
+                    <select id="cBaseDtType" name="cBaseDtType"></select>
+                </td>
             </tr>
             <tr>
                 <th>描述</th>
-                <td><input name="cDesc" type="text" maxlength="50" size="12" placeholder="描述" /></td>
+                <td>
+                    <input name="cDesc" type="text" maxlength="50" size="12" placeholder="描述" />
+                </td>
             </tr>
             <tr>
                 <th>期數</th>
@@ -41,7 +53,9 @@
             </tr>
             <tr>
                 <th>合約/到期日</th>
-                <td><input id="cDaylineDt" name="cDaylineDt" type="date" maxlength="10" size="12" placeholder="合約/到期日" /></td>
+                <td>
+                    <input id="cDaylineDt" name="cDaylineDt" type="date" maxlength="10" size="12" placeholder="合約/到期日" />
+                </td>
             </tr>
             <tr>
                 <th>啟用</th>
@@ -133,6 +147,8 @@
                             n: "修改", t: "btn", f: function (e) {
                                 var frm = $("#frmupupd");
                                 for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                $("#cType").change();
+                                $("#cTypeDesc").val(e["cTypeDesc"]);
                                 $("#cEnableY").prop("checked", e.cEnable);
                                 $("#cEnableN").prop("checked", !e.cEnable);
                                 $("#dvupupd").dialogopen();

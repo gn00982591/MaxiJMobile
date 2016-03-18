@@ -7,7 +7,7 @@
       <Diagram DiagramId="53efd33a283443809b62a1a289689ce0" Name="Diagram1">
         <EntityTypeShape EntityType="db850b60b99a9145fea7aea52f005a5589Model.tCode" Width="1.5" PointX="3.375" PointY="0.75" />
         <EntityTypeShape EntityType="db850b60b99a9145fea7aea52f005a5589Model.tUrl" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="db850b60b99a9145fea7aea52f005a5589Model.tAlimony" Width="1.5" PointX="0.75" PointY="4.75" />
+        <EntityTypeShape EntityType="db850b60b99a9145fea7aea52f005a5589Model.tAlimony" Width="1.5" PointX="0.75" PointY="4.75" IsExpanded="true" />
         <EntityTypeShape EntityType="db850b60b99a9145fea7aea52f005a5589Model.tStock" Width="1.5" PointX="3.375" PointY="4.75" />
         <EntityTypeShape EntityType="db850b60b99a9145fea7aea52f005a5589Model.tStockClearing" Width="1.5" PointX="5.375" PointY="0.75" />
         <EntityTypeShape EntityType="db850b60b99a9145fea7aea52f005a5589Model.tStockTran" Width="1.5" PointX="5.375" PointY="3.75" />
