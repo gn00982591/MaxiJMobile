@@ -308,7 +308,7 @@
 var aselect = "hvr-bounce-to-bottom-selected";
 
 $(window).load(function () {
-    preloadersec = preloadersec <= 0 ? 400 : preloadersec;
+    preloadersec = preloadersec <= 0 ? 50 : preloadersec;
     $('.preloader__img').fadeOut(preloadersec);
     setTimeout(function () { $('.preloader').addClass('active').delay(preloadersec * 2).fadeOut(preloadersec); }, (preloadersec * 2));
     /*a tab選取時class更換*/

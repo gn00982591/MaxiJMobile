@@ -13,7 +13,7 @@
         var br = Request.Browser;
         if (br.Browser.ToUpper().Contains("IE") && br.MajorVersion < 9) { Response.Redirect("/WAY/NonSupport"); }
         /*載入動畫的執行時間(毫秒)*/
-        ViewBag.preloader = (ViewContext.ControllerName().ToStringUpper() == "WAY" && ViewContext.ActionName().ToStringUpper() == "INDEX") ? 400 : 100;
+        ViewBag.preloader = (ViewContext.ControllerName().ToStringUpper() == "WAY" && ViewContext.ActionName().ToStringUpper() == "INDEX") ? 100 : 50;
     }
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/fontawesome")
@@ -78,7 +78,7 @@
             <div id="debug"></div>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang ver.2016031801
+            &copy; Copy Right 2015 - @(DateTime.Now.Year) Maximus Chang ver.2016031802
         </footer>
     </div>
     <script>
