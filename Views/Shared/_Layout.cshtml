@@ -17,7 +17,7 @@
     }
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/fontawesome")
-    @Scripts.Render("~/bundles/modernizr")
+    @*@Scripts.Render("~/bundles/modernizr")*@
     <link href="@Url.Content("~/Content/themes/base/all.css")" rel="stylesheet" />
     @RenderSection("style", required: false)
 </head>
@@ -76,10 +76,9 @@
             @RenderBody()
             <div id="dialog"></div>
             <div id="debug"></div>
-        </div>
-       
+        </div>       
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016031804
+            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016040601
         </footer>
     </div>
     <script>
