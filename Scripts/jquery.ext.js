@@ -79,6 +79,8 @@
          *      hidden          :[],        隱藏資料
          *      msg             :[],        訊息欄
          *      isnonebotton    :bool,      資料下方是否產生大區間
+         *      isvertical      :bool,      是否為垂直資料
+         *      vercr           :number,    垂直橫向組數
          *      ths             :{},        資料內容分二階處理
          *          k           :string,    第一層的主索引
          *          v           :string,    主索引取出的數值    
@@ -95,63 +97,82 @@
                 t.empty();
                 /*設定資料表的 Title*/
                 if (obj.title != "" && !$.isEmptyObject(obj.title)) { t.append("<span class='title'>" + obj.title + "</span>"); }
-                var tb = $("<table/>", { "class": "main" }), tr = $("<tr/>");
+                var tb = $("<table/>", { "class": "main" });
                 if (obj.isnonebotton) { tb.css("margin-bottom", "20px"); }
                 /*欄位名稱*/
-                $(obj.th).each(function (i, e) { tr.append("<th>" + e.n + "</th>"); });
-                tb.append(tr);
+                if (!obj.isvertical) {
+                    var tr = $("<tr/>");
+                    $(obj.th).each(function (i, e) { tr.append("<th>" + e.n + "</th>"); });
+                    tb.append(tr);
+                }
                 /*內容*/
                 if (obj.data.length <= 0 || $.isEmptyObject(obj.data)) { tb.append("<td colspan='" + obj.th.length + "' class='c'>無資料</td>"); }
                 else {
-                    function setLast(e, th, t) {
-                        var itr = $("<tr/>");
-                        $(th).each(function (ii, ee) {
-                            var td = $("<td>", { "name": ee.v });
-                            switch (ee.t) {
-                                case "bool":
-                                    td.addClass("c").append("<input type='checkbox' disabled='disabled' " + (e[ee.v] ? "checked='checked'" : "") + " />");
-                                    break;
-                                case "bool-lab":
-                                    td.addClass("c").append("<input type='checkbox' disabled='disabled' " + (e[ee.v] ? "checked='checked'" : "") + " />" + ee.n);
-                                    break;
-                                case "bool-select":
-                                    var inpuname = "isselect";
-                                    td.addClass("c").append($("<input>", { "type": "checkbox", "name": inpuname }).click(function () {
-                                        var isc = $(this).prop("checked");
-                                        $("input[name='" + inpuname + "']:checked").prop("checked", false);
-                                        $(this).prop("checked", isc);
-                                        if ($.isFunction(ee.f)) { ee.f(e); }
-                                    }));
-                                    break;
-                                case "num":
-                                    str = e[ee.v].toString();
-                                    td.addClass("r").append(str.replace(/\./.test(str) ? (/(\d{1,3})(?=(\d{3})+\.)/g) : (/(\d{1,3})(?=(\d{3})+$)/g), "$1,"));
-                                    break;
-                                case "num-rg":
-                                    str = e[ee.v].toString();
-                                    td.addClass("r").css("color", (e[ee.v] > 0 ? "red" : "green")).append(str.replace(/\./.test(str) ? (/(\d{1,3})(?=(\d{3})+\.)/g) : (/(\d{1,3})(?=(\d{3})+$)/g), "$1,"));
-                                    break;
-                                case "btn":
-                                    var btn = $("<button/>").text(ee.n).click(function () { if ($.isFunction(ee.f)) { ee.f(e, btn); } });
-                                    if (ee.elename != null && ee.elename != "") { btn.prop("name", ee.elename); }
-                                    td.addClass("c").append(btn);
-                                    break;
-                                case "txt-c": td.addClass("c").append(e[ee.v]); break;
-                                case "txt-most":
-                                    var cstr = 5;
-                                    if (e[ee.v] != "" && e[ee.v].length > cstr) {
-                                        td.removeProp("name").addClass("pointer").click(function () { $.alert(e[ee.v]); })
-                                            .append("<input type='hidden' name='" + ee.v + "' value='" + e[ee.v] + "' />")
-                                            .append(e[ee.v].substr(0, cstr) + "...");
-                                    } else { td.append(e[ee.v]); }
-                                    break;
-                                case "other":
-                                    //使用bind來綁定func
-                                    break;
-                                default: td.append(e[ee.v]); break;
-                            }
-                            itr.append(td);
-                        });
+                    function setTrTd(ii, ee, e) {
+                        var td = $("<td>", { "name": ee.v });
+                        switch (ee.t) {
+                            case "bool":
+                                td.addClass("c").append("<input type='checkbox' disabled='disabled' " + (e[ee.v] ? "checked='checked'" : "") + " />");
+                                break;
+                            case "bool-lab":
+                                td.addClass("c").append("<input type='checkbox' disabled='disabled' " + (e[ee.v] ? "checked='checked'" : "") + " />" + ee.n);
+                                break;
+                            case "bool-select":
+                                var inpuname = "isselect";
+                                td.addClass("c").append($("<input>", { "type": "checkbox", "name": inpuname }).click(function () {
+                                    var isc = $(this).prop("checked");
+                                    $("input[name='" + inpuname + "']:checked").prop("checked", false);
+                                    $(this).prop("checked", isc);
+                                    if ($.isFunction(ee.f)) { ee.f(e); }
+                                }));
+                                break;
+                            case "sel-codeopt":
+                                var sel = $("<select/>", { "name": ee.v })
+                                    .getCodeOpt({ "cupid": ee.cupid })
+                                    .change(function () { if ($.isFunction(ee.change)) { ee.change(e); } })
+                                if (ee.hasid) { sel.prop("id", ee.v) }
+                                td.append(sel);
+                                break;
+                            case "num":
+                                str = e[ee.v] == null ? "0" : e[ee.v].toString();
+                                td.addClass("r").append(str.replace(/\./.test(str) ? (/(\d{1,3})(?=(\d{3})+\.)/g) : (/(\d{1,3})(?=(\d{3})+$)/g), "$1,"));
+                                break;
+                            case "num-rg":
+                                str = e[ee.v] == null ? "0" : e[ee.v].toString();
+                                td.addClass("r").css("color", (e[ee.v] > 0 ? "red" : "green")).append(str.replace(/\./.test(str) ? (/(\d{1,3})(?=(\d{3})+\.)/g) : (/(\d{1,3})(?=(\d{3})+$)/g), "$1,"));
+                                break;
+                            case "btn":
+                                var btn = $("<button/>").text(ee.n)
+                                    .click(function () { if ($.isFunction(ee.f)) { ee.f(e, btn); } });
+                                if (ee.elename != null && ee.elename != "") { btn.prop("name", ee.elename); }
+                                td.addClass("c").append(btn);
+                                break;
+                            case "txt":
+                                var txt = $("<input/>", { "type": "text", "name": ee.v, "class": "r", "maxlength": "10" })
+                                    .change(function () { if ($.isFunction(ee.change)) { ee.change(e); } })
+                                    .focus(function () { if ($.isFunction(ee.focus)) { ee.focus(e); } })
+                                    .focusout(function () { if ($.isFunction(ee.focusout)) { ee.focusout(e); } });
+                                if (ee.hasid) { txt.prop("id", ee.v); }
+                                if (!$.isEmptyObject(ee.d)) { txt.val(ee.d); }
+                                td.append(txt);
+                                break;
+                            case "txt-c": td.addClass("c").append(e[ee.v]); break;
+                            case "txt-most":
+                                var cstr = 5;
+                                if (e[ee.v] != "" && e[ee.v].length > cstr) {
+                                    td.removeProp("name").addClass("pointer").click(function () { $.alert(e[ee.v]); })
+                                        .append("<input type='hidden' name='" + ee.v + "' value='" + e[ee.v] + "' />")
+                                        .append(e[ee.v].substr(0, cstr) + "...");
+                                } else { td.append(e[ee.v]); }
+                                break;
+                            case "other":
+                                //使用bind來綁定func
+                                break;
+                            default: td.append(e[ee.v]); break;
+                        }
+                        return td;
+                    }
+                    function setTrHidden(itr, e, t) {
                         switch (t) {
                             case 1:
                                 itr.find("td").css({ "background-color": "#7495f4", "color": "#fff" });
@@ -166,8 +187,28 @@
                         }
                         return itr;
                     }
+                    function setLast(e, th, t) {
+                        var itr = $("<tr/>");
+                        $(th).each(function (ii, ee) { itr.append(setTrTd(ii, ee, e)); });
+                        return setTrHidden(itr, e, t);
+                    }
                     /*一般資料呈現*/
-                    if ($.isEmptyObject(obj.ths)) { $(obj.data).each(function (i, e) { tb.append(setLast(e, obj.th)); }); }
+                    if (obj.isvertical) {
+                        var vercr = ($.isNumeric(obj.vercr) ? obj.vercr : 1), vercrcount = 0;
+                        for (var u = 0; u < Math.round(obj.th.length / vercr) ; u++) {
+                            var itr = $("<tr/>");
+                            for (var h = 0; h < vercr; h++) {
+                                if (vercrcount < obj.th.length) {
+                                    uhe = obj.th[vercrcount];
+                                    itr.append("<th class='r'>" + uhe.n + "</th>");
+                                    itr.append(setTrTd(vercrcount, uhe, obj.data));
+                                    vercrcount++;
+                                }
+                            }
+                            tb.append(itr);
+                        }
+                    }
+                    else if ($.isEmptyObject(obj.ths)) { $(obj.data).each(function (i, e) { tb.append(setLast(e, obj.th)); }); }
                     else {
                         if ($.isEmptyObject(obj.ths.v)) {
                             var kli = [], kliup = [];

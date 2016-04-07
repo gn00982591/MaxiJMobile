@@ -21,38 +21,7 @@
     <table>
         <tr>
             <td id="dvdata"></td>
-            <td id="dvtran">
-                <table>
-                    <tr>
-                        <th>代號</th>
-                        <td>
-                            <input id="cId" name="cId" type="text" maxlength="10" size="11" readonly="readonly" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>名稱</th>
-                        <td name="cName"></td>
-                    </tr>
-                    <tr>
-                        <th>分類</th>
-                        <td>
-                            <select id="cAct" name="cAct"></select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>手續費</th>
-                        <td>
-                            <input id="cFee" name="cFee" type="number" maxlength="8" size="9" placeholder="手續費" value="0" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>成交日</th>
-                        <td>
-                            <input id="cTranDt" name="cTranDt" type="date" maxlength="10" size="12" placeholder="成交日" />
-                        </td>
-                    </tr>
-                </table>
-            </td>
+            <td id="dvtran"></td>
         </tr>
     </table>
 </div>
@@ -65,7 +34,18 @@
                     "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "目標差", v: "cMust", t: "num" },
                         {
                             n: "模擬", t: "btn", f: function (e) {
-
+                                $("#dvtran").tableData({
+                                    "title": "模擬",
+                                    isvertical: true,
+                                    vercr: 2,
+                                    "data": e,
+                                    "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" },
+                                        {
+                                            n: "分類", v: "cAct", t: "sel-codeopt", "cupid": "01001", "hasid": true, "change": function (e) {
+                                            }
+                                        },
+                                        { n: "手續費", v: "cFee", t: "num" }, { n: "目標(張)", v: "cFee", t: "txt", "hasid": true, d: 0 }]
+                                });
                             }
                         }, { n: "目標(張)", v: "cTargetQty", t: "num" }],
                     "hidden": ["cId", "cName"],
@@ -83,10 +63,11 @@
         $(window).load(function () {
             /*取得有設定目標量但未達標的股票資料*/
             getTarget();
+            $("#cAct").getCodeOpt({ "cupid": "01001" });
             /*重設*/
             $("#breset").click(function () { $("#stock").val(""); });
             /*查詢*/
-            $("#bsubmit").click(function () { $("#dvtran").empty(); $.post('@Url.Content("~/Select/getStockMultiId")', { "str": $("#stock").totrimupper().val() }).done(function (x) { getData(x, false); }); });
+            $("#bsubmit").click(function () { $.post('@Url.Content("~/Select/getStockMultiId")', { "str": $("#stock").totrimupper().val() }).done(function (x) { getData(x, false); }); });
         });
     </script>
 }

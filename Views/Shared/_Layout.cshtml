@@ -16,9 +16,7 @@
         ViewBag.preloader = (ViewContext.ControllerName().ToStringUpper() == "WAY" && ViewContext.ActionName().ToStringUpper() == "INDEX") ? 100 : 50;
     }
     @Styles.Render("~/Content/css")
-    @Styles.Render("~/Content/fontawesome")
-    @*@Scripts.Render("~/bundles/modernizr")*@
-    <link href="@Url.Content("~/Content/themes/base/all.css")" rel="stylesheet" />
+    @*@Styles.Render("~/Content/fontawesome")*@
     @RenderSection("style", required: false)
 </head>
 <body class="classic" data-spy="scroll">
@@ -78,7 +76,7 @@
             <div id="debug"></div>
         </div>       
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016040701
+            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016040702
         </footer>
     </div>
     <script>
