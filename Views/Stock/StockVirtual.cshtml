@@ -17,47 +17,76 @@
         </div>
     </div>
 </div>
-<div id="dvupupd" class="upd" title="增修">
-    <input type="hidden" id="qty" />
-    <form id="frmupupd">
-        <input type="hidden" name="cSeq" id="cSeq" />
-        <table>
-            <tr>
-                <th>代號</th>
-                <td><input id="cId" name="cId" type="text" maxlength="10" size="11" readonly="readonly" /></td>
-            </tr>
-            <tr>
-                <th>名稱</th>
-                <td name="cName"></td>
-            </tr>
-            <tr>
-                <th>分類</th>
-                <td><select id="cAct" name="cAct"></select></td>
-            </tr>
-            <tr>
-                <th>手續費</th>
-                <td><input id="cFee" name="cFee" type="number" maxlength="8" size="9" placeholder="手續費" value="0" /></td>
-            </tr>
-            <tr>
-                <th>成交日</th>
-                <td><input id="cTranDt" name="cTranDt" type="date" maxlength="10" size="12" placeholder="成交日" /></td>
-            </tr>
-        </table>
-        <div class="dvupbtn">
-            <button id="bupd" type="button">確認</button>
-            <button id="reset" type="reset">重設</button>
-        </div>
-    </form>
-</div>
-<div class="data" id="dvdata">
-    ◆ 經查詢，取得股票資料後，方可新增交易資料。
-    <br />
-    ◆ 若查詢無股票時，需先新增股票。
+<div class="data">
+    <table>
+        <tr>
+            <td id="dvdata"></td>
+            <td id="dvtran">
+                <table>
+                    <tr>
+                        <th>代號</th>
+                        <td>
+                            <input id="cId" name="cId" type="text" maxlength="10" size="11" readonly="readonly" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>名稱</th>
+                        <td name="cName"></td>
+                    </tr>
+                    <tr>
+                        <th>分類</th>
+                        <td>
+                            <select id="cAct" name="cAct"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>手續費</th>
+                        <td>
+                            <input id="cFee" name="cFee" type="number" maxlength="8" size="9" placeholder="手續費" value="0" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>成交日</th>
+                        <td>
+                            <input id="cTranDt" name="cTranDt" type="date" maxlength="10" size="12" placeholder="成交日" />
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </div>
 @section scripts {
     <script>
-        $(window).load(function () {
+        function getData(x, ys) {
+            if (x.isok) {
+                $("#dvdata").tableData({
+                    "title": "股票列表",
+                    "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "目標差", v: "cMust", t: "num" },
+                        {
+                            n: "模擬", t: "btn", f: function (e) {
 
+                            }
+                        }, { n: "目標(張)", v: "cTargetQty", t: "num" }],
+                    "hidden": ["cId", "cName"],
+                    "data": x.data,
+                    "msg": ["經查詢，取得股票資料後，方可新增交易資料。",
+                        "若查詢無股票時，需先新增股票。",
+                        "配息權時，直接輸入取得的「總量」，或「總額」。"]
+                });
+            }
+            else { if (!ys) { $.alert(x.msg); } }
+        }
+
+        function getTarget() { $.post('@Url.Content("~/Select/getStockTarget")').done(function (x) { getData(x, true); }); }
+
+        $(window).load(function () {
+            /*取得有設定目標量但未達標的股票資料*/
+            getTarget();
+            /*重設*/
+            $("#breset").click(function () { $("#stock").val(""); });
+            /*查詢*/
+            $("#bsubmit").click(function () { $("#dvtran").empty(); $.post('@Url.Content("~/Select/getStockMultiId")', { "str": $("#stock").totrimupper().val() }).done(function (x) { getData(x, false); }); });
         });
     </script>
 }
