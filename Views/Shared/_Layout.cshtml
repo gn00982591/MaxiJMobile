@@ -17,6 +17,8 @@
     }
     @Styles.Render("~/Content/css")
     @*@Styles.Render("~/Content/fontawesome")*@
+    @*不拉出來，動態tag會無css*@
+    <link href="@Url.Content("~/Content/themes/base/all.css")" rel="stylesheet" />
     @RenderSection("style", required: false)
 </head>
 <body class="classic" data-spy="scroll">
@@ -76,7 +78,7 @@
             <div id="debug"></div>
         </div>       
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016041101
+            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016041102
         </footer>
     </div>
     <script>
