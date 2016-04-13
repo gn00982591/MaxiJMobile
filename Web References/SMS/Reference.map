@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DiscoveryClientResultsFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Results>
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.ContractReference" url="http://ibeb2b.travelsky.net.tw:8080/SMS/service/COWELL_CN_SMS_EVERY8D_WS?wsdl" filename="COWELL_CN_SMS_EVERY8D_WS.wsdl" />
+  </Results>
+</DiscoveryClientResultsFile>

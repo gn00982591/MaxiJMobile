@@ -1,0 +1,30 @@
+﻿
+<div class="data">
+    <form id="frm" name="frm" method="post">
+        <table>
+            <tr>
+                <td id="dvdata"></td>
+            </tr>
+            <tr>
+                <td>
+                    <button>確認</button>
+                    <button type="reset">重設</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+@section scripts{
+    <script>
+        $(window).load(function () {
+            $("#dvdata").tableData({
+                "title": "簡訊",
+                isvertical: true,
+                isnonebotton:true,
+                "data": { "p": "", "sms": "" },
+                "th": [{ n: "電話", v: "p", t: "txt", "hasid": true, d: "" }, { n: "內容", v: "sms", t: "txt", "hasid": true, d: "" }]
+            });
+        });
+    </script>
+}
+
