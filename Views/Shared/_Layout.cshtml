@@ -76,9 +76,9 @@
             @RenderBody()
             <div id="dialog"></div>
             <div id="debug"></div>
-        </div>
+        </div>       
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016041302
+            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016042601
         </footer>
     </div>
     <script>
@@ -93,17 +93,11 @@
             "tranfee":"@(StockFee.tranfee)"
         };
     </script>
-    @*@Scripts.Render("~/bundles/jquery")*@
-    @Scripts.Render("~/bundles/jquerysample")
-    @Url.Content("~/Content/themes/base/all.css")
-    <script src="@Url.Content("~/Scripts/jquery.blockUI.js")"></script>
-    <script src="@Url.Content("~/Scripts/highcharts/4.2.0/highcharts.js")"></script>
-    <script src="@Url.Content("~/Scripts/highcharts/4.2.0/themes/dark-unica.js")"></script>
-    <script src="@Url.Content("~/Scripts/jquery.ext.js")"></script>
+    @Scripts.Render("~/bundles/jquery")
     @RenderSection("scripts", required: false)
     <script>
         /*取得股票即時資料*/
-        $.post('@Url.Content("~/Select/StockOnlin")');
+        setTimeout(function(){$.post('@Url.Content("~/Select/StockOnlin")');},10000);
         /*Cookie只存超過*/
         setTimeout(function(){$("*").click(function(){location.reload();});}, @(csProp.CookiesLift)-1);
     </script>
