@@ -136,10 +136,12 @@
                             case "num":
                                 str = e[ee.v] == null ? "0" : e[ee.v].toString();
                                 td.addClass("r").append(str.replace(/\./.test(str) ? (/(\d{1,3})(?=(\d{3})+\.)/g) : (/(\d{1,3})(?=(\d{3})+$)/g), "$1,"));
+                                if (ee.hasid) { td.prop("id", ee.v); }
                                 break;
                             case "num-rg":
                                 str = e[ee.v] == null ? "0" : e[ee.v].toString();
                                 td.addClass("r").css("color", (e[ee.v] > 0 ? "red" : "green")).append(str.replace(/\./.test(str) ? (/(\d{1,3})(?=(\d{3})+\.)/g) : (/(\d{1,3})(?=(\d{3})+$)/g), "$1,"));
+                                if (ee.hasid) { td.prop("id", ee.v); }
                                 break;
                             case "btn":
                                 var btn = $("<button/>").text(ee.n)
@@ -148,12 +150,13 @@
                                 td.addClass("c").append(btn);
                                 break;
                             case "txt":
-                                var txt = $("<input/>", { "type": "text", "name": ee.v, "class": "r", "maxlength": "10" })
+                                var txt = $("<input/>", { "type": "text", "name": ee.v, "class": "r", })
                                     .change(function () { if ($.isFunction(ee.change)) { ee.change(e); } })
                                     .focus(function () { if ($.isFunction(ee.focus)) { ee.focus(e); } })
-                                    .focusout(function () { if ($.isFunction(ee.focusout)) { ee.focusout(e); } });
+                                    .focusout(function () { if ($.isFunction(ee.focusout)) { ee.focusout(e); } })
+                                    .prop({ "maxlength": "10", "size": "10" });
                                 if (ee.hasid) { txt.prop("id", ee.v); }
-                                if (!$.isEmptyObject(ee.d)) { txt.val(ee.d); }
+                                if (ee.d != null) { txt.val(ee.d); }
                                 td.append(txt);
                                 break;
                             case "txt-c": td.addClass("c").append(e[ee.v]); break;

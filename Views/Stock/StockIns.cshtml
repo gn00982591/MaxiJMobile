@@ -1,4 +1,4 @@
-﻿@using MaxiJMobile.Models;
+﻿
 <div class="searcher">
     <div>
         <a href="#" id="aup">新增</a>
@@ -26,15 +26,21 @@
         <table>
             <tr>
                 <th>名稱</th>
-                <td><input id="cName" name="cName" type="text" maxlength="10" size="11" placeholder="股票名稱" /></td>
+                <td>
+                    <input id="cName" name="cName" type="text" maxlength="10" size="11" placeholder="股票名稱" />
+                </td>
             </tr>
             <tr>
                 <th>代號</th>
-                <td><input name="cId" type="text" maxlength="10" size="11" placeholder="股票代號" /></td>
+                <td>
+                    <input name="cId" type="text" maxlength="10" size="11" placeholder="股票代號" />
+                </td>
             </tr>
             <tr>
                 <th>目標(張)</th>
-                <td><input name="cTargetQty" type="number" size="12" placeholder="目標(張)" value="0" /></td>
+                <td>
+                    <input name="cTargetQty" type="number" size="12" placeholder="目標(張)" value="0" />
+                </td>
             </tr>
             <tr>
                 <th>啟用</th>
@@ -91,7 +97,7 @@
         $(window).load(function () {
             getData();
             /*查詢*/
-            $("#bsubmit").click(function () {  getData(true); });
+            $("#bsubmit").click(function () { getData(true); });
             /*重設*/
             $("#breset").click(function () { $("#stock").val(""); });
             /*新增*/

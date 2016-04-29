@@ -1,4 +1,4 @@
-﻿@using MaxiJMobile.Models;
+﻿
 <div class="searcher">
     <div>
         <a href="#" id="aup" class="hvr-bounce-to-bottom-selected">主項</a>
@@ -37,19 +37,27 @@
         <table>
             <tr>
                 <th>主索引鍵</th>
-                <td><input name="cId" type="text" maxlength="5" size="6" placeholder="主索引鍵" /></td>
+                <td>
+                    <input name="cId" type="text" maxlength="5" size="6" placeholder="主索引鍵" />
+                </td>
             </tr>
             <tr>
                 <th>值</th>
-                <td><input name="cKey" type="text" maxlength="50" size="12" placeholder="值" /></td>
+                <td>
+                    <input name="cKey" type="text" maxlength="50" size="12" placeholder="值" />
+                </td>
             </tr>
             <tr>
                 <th>描述</th>
-                <td><input name="cDesc" type="text" maxlength="100" size="12" placeholder="描述" /></td>
+                <td>
+                    <input name="cDesc" type="text" maxlength="100" size="12" placeholder="描述" />
+                </td>
             </tr>
             <tr>
                 <th>排序</th>
-                <td><input name="cSort" type="number" max="99" maxlength="2" size="3" placeholder="排序" /></td>
+                <td>
+                    <input name="cSort" type="number" max="99" maxlength="2" size="3" placeholder="排序" />
+                </td>
             </tr>
             <tr>
                 <th>啟用</th>
@@ -72,23 +80,33 @@
         <table>
             <tr>
                 <th>主索引鍵</th>
-                <td><input name="cId" type="text" maxlength="5" size="6" placeholder="主索引鍵" /></td>
+                <td>
+                    <input name="cId" type="text" maxlength="5" size="6" placeholder="主索引鍵" />
+                </td>
             </tr>
             <tr>
                 <th>上層索引鍵</th>
-                <td><select name="cUpId"></select></td>
+                <td>
+                    <select name="cUpId"></select>
+                </td>
             </tr>
             <tr>
                 <th>值</th>
-                <td><input name="cKey" type="text" maxlength="50" size="12" placeholder="值" /></td>
+                <td>
+                    <input name="cKey" type="text" maxlength="50" size="12" placeholder="值" />
+                </td>
             </tr>
             <tr>
                 <th>描述</th>
-                <td><input name="cDesc" type="text" maxlength="100" size="12" placeholder="描述" /></td>
+                <td>
+                    <input name="cDesc" type="text" maxlength="100" size="12" placeholder="描述" />
+                </td>
             </tr>
             <tr>
                 <th>排序</th>
-                <td><input name="cSort" type="number" max="99" maxlength="2" size="3" placeholder="排序" /></td>
+                <td>
+                    <input name="cSort" type="number" max="99" maxlength="2" size="3" placeholder="排序" />
+                </td>
             </tr>
             <tr>
                 <th>啟用</th>
@@ -218,7 +236,7 @@
         /*檢核*/
         function ckhUp(obj) {
             if ($.isEmptyObject(obj)) { $.alert("X0：發生錯誤，請核查程式!!!"); return; }
-            if ($.isNoneEmpty(obj.frm.find("input:visible"))) { return;}
+            if ($.isNoneEmpty(obj.frm.find("input:visible"))) { return; }
             if (!/[A-Z0-9]{5}/.test(obj.frm.find('input[name="cId"]').val())) { $.alert("X2：「主索引鍵」資料格式不正確!!!"); return; }
             if (/[^0-9]/.test(obj.frm.find('input[name="cSort"]').val())) { $.alert("X6：「排序」資料格式不正確!!!"); return; }
             $.post('@Url.Content("~/Select/getCodeSingle")', { "cid": obj.frm.find('input[name="cId"]').val(), "cupid": obj.frm.find('*[name="cUpId"]').val() })

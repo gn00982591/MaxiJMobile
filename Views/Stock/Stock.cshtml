@@ -1,4 +1,4 @@
-﻿@using MaxiJMobile.Models;
+﻿
 <div class="searcher">
     <div>
         <a href="#" id="aonline">即時</a>
@@ -42,7 +42,7 @@
                 else { chardata = d; }
                 $("#dvdata").tableData({
                     "title": "股票列表",
-                    "msg": ["成本的計算都有加入剩下庫存賣出的手續費。"],
+                    "msg": ["成本的計算目前沒有加入剩下庫存賣出的手續費。"],
                     "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存(張)", v: "cQty", t: "num" },
                         { n: "均價", v: "cAvgPrice", t: "num" }, { n: "收價", v: "cPrice", t: "num" },
                         { n: "損益", v: "cGet", t: "num-rg" }, { n: "累計息", v: "cIns", t: "num" }, { n: "計息日", v: "cInsDt" },
@@ -72,7 +72,7 @@
                 $.post('@Url.Content("~/Select/getStockHasTran")').done(function (x) {
                     dv = x;
                     ok(x);
-                    var dxv = { tcost: 0, tval: 0, tins: 0,ttake:0 };
+                    var dxv = { tcost: 0, tval: 0, tins: 0, ttake: 0 };
                     for (var g in x) {
                         dxv.tcost = $.addition(dxv.tcost, x[g]["cCost"]);
                         dxv.tval = $.addition(dxv.tval, x[g]["cValue"]);
