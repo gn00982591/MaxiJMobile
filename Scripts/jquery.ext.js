@@ -343,7 +343,17 @@
         /*清除元件的val()的空白*/
         "totrim": function () { return this.each(function () { var t = $(this); t.val($.trim(t.val())); }); },
         /*清除元件的val()的空白，並轉大寫*/
-        "totrimupper": function () { return this.each(function () { var t = $(this); t.val($.trim(t.val().toUpperCase())); }); }
+        "totrimupper": function () { return this.each(function () { var t = $(this); t.val($.trim(t.val()).toUpperCase()); }); },
+        /*判斷是否為數字處理*/
+        "isNum": function (str) {
+            return this.each(function () {
+                var t = $(this);
+                str = str == null ? "" : (str + "-");
+                t.val($.trim(t.val()));
+                if (t.val() == "") { t.val(0); return; }
+                if (!$.isNumeric(t.val())) { $.alert("X1：" + str + t.val() + " 並非數字!!!"); t.val(0); }
+            });
+        }
     });
 })(jQuery);
 

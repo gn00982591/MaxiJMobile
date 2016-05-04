@@ -1,4 +1,4 @@
-﻿
+﻿@using MaxiJMobile.Models;
 <div class="data">
     <table>
         <tr>
@@ -14,24 +14,28 @@
             $.post('@Url.Content("~/Select/getStockHasTran")')
                .done(function (x) {
                    function chk(gv) {
+                       $("#cTargetQty,#cTargetPrice").isNum();
                        var qty = $.multiplication(1000, $("#cTargetQty").val()),
+                           price = $.multiplication(1, $("#cTargetPrice").val()),
                            act = $("#cAct :selected").val();
-                       var bf = $.getStockFee({ "price": $("#cTargetPrice").val(), qty: qty, "type": act });
+                       $("#cAvgCost,#cFee,#cFinQty,#cFinFee").text(0);
+                       if ($.multiplication(qty, price) <= 0) { return; }
+                       var bf = $.getStockFee({ "price": price, qty: qty, "type": act }),
+                           finqty = 0,
+                           finfee = 0;
                        $("#cFee").text(bf);
-                       if ("B" == act) {
-                           var sf = $.getStockFee({ "price": gv.cPrice, qty: qty, "type": "S" });
-                           var fin = $.division($.addition($.addition($.addition(bf, sf), gv.cCost), $.multiplication(qty, gv.cPrice)), $.addition(gv.cQty, qty));
-                           $("#cAvgCost").text(fin);
-                       }
+                       finqty = $.addition(gv.cQty, ("B" == act) ? qty : -qty);
+                       finfee = $.getStockFee({ "price": gv.cPrice, qty: finqty, "type": "S" });
+                       $("#cFinFee").text(finfee);
+                       $("#cFinQty").text(finqty);
+                       $("#cAvgCost").text($.division($.addition($.addition($.addition(bf, finfee), gv.cCost), $.multiplication(qty, price)), finqty));
                    }
 
                    $("#dvdata").tableData({
                        "title": "股票列表",
                        "hidden": ["cId", "cName"],
                        "data": x,
-                       "msg": ["經查詢，取得股票資料後，方可新增交易資料。",
-                           "若查詢無股票時，需先新增股票。",
-                           "配息權時，直接輸入取得的「總量」，或「總額」。"],
+                       "msg": ["@csProp.csTip.Stock.Cost_Desc_001"],
                        "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "均價", v: "cAvgPrice", t: "num" },
                            { n: "收價", v: "cPrice", t: "num" }, { n: "成本", v: "cCost", t: "num" },
                            {
@@ -41,16 +45,13 @@
                                        isvertical: true,
                                        vercr: 1,
                                        "data": e,
-                                       "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "均價", v: "cAvgPrice", t: "num" },
-                                           {
-                                               n: "分類", v: "cAct", t: "sel-codeopt", "cupid": "01001", "hasid": true, "change": function (e) { chk(e); }
-                                           },
+                                       "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "收價", v: "cPrice", t: "num" },
+                                           { n: "分類", v: "cAct", t: "sel-codeopt", "cupid": "01001", "hasid": true, "change": function (e) { chk(e); } },
                                            { n: "目標張數", v: "cTargetQty", t: "txt", "hasid": true, "d": 0, "change": function (e) { chk(e); } },
                                            { n: "目標成交價", v: "cTargetPrice", t: "txt", "hasid": true, "d": e.cPrice, "change": function (e) { chk(e); } },
-                                           { n: "手續費", v: "cFee", t: "num", "hasid": true }, { n: "約算均價", v: "cAvgCost", t: "num", "hasid": true },
-                                           {
-                                               n: "計算", t: "btn", f: function (e) { chk(e); }
-                                           }]
+                                           { n: "手續費", v: "cFee", t: "num", "hasid": true },
+                                           { n: "結存庫存", v: "cFinQty", t: "num", "hasid": true }, { n: "出清手續費", v: "cFinFee", t: "num", "hasid": true },
+                                           { n: "成本均價", v: "cAvgCost", t: "num", "hasid": true }, { n: "計算", t: "btn", f: function (e) { chk(e); } }]
                                    });
                                }
                            }]
@@ -58,8 +59,6 @@
                });
             /*設定分類*/
             $("#cAct").getCodeOpt({ "cupid": "01001" });
-            /*重設*/
-            $("#breset").click(function () { $("#stock").val(""); });
         });
     </script>
 }
