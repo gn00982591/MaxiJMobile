@@ -69,7 +69,7 @@
             }
             if (isg) { ok(dv); }
             else {
-                $.post('@Url.Content("~/Select/getStockHasTran")').done(function (x) {
+                @*$.post('@Url.Content("~/Select/getStockHasTran")').done(function (x) {
                     dv = x;
                     ok(x);
                     var dxv = { tcost: 0, tval: 0, tins: 0, ttake: 0 };
@@ -82,6 +82,23 @@
                     $("#dvcou").tableData({
                         isnonebotton: true,
                         "th": [{ n: "總成本", v: "tcost", t: "num" }, { n: "總現值", v: "tval", t: "num" }, { n: "總計息", v: "tins", t: "num" }, { n: "淨值", v: "ttake", t: "num-rg" }],
+                        "data": dxv
+                    });
+                });*@
+                $.when($.post('@Url.Content("~/Select/getStockHasTran")'), $.post('@Url.Content("~/Select/getStockLastYearIns")')).done(function (x, y) {
+                    dv = x[0];
+                    ok(x[0]);
+                    var dxv = { tcost: 0, tval: 0, tins: 0, ttake: 0, lastins: y[0].Ins };
+                    for (var g in x) {
+                        dxv.tcost = $.addition(dxv.tcost, x[0][g]["cCost"]);
+                        dxv.tval = $.addition(dxv.tval, x[0][g]["cValue"]);
+                        dxv.tins = $.addition(dxv.tins, x[0][g]["cIns"]);
+                    }
+                    dxv.ttake = $.addition($.addition(dxv.tval, dxv.tins), $.multiplication(dxv.tcost, "-1"));
+                    $("#dvcou").tableData({
+                        isnonebotton: true,
+                        "th": [{ n: "總成本", v: "tcost", t: "num" }, { n: "總現值", v: "tval", t: "num" }, { n: "總計息", v: "tins", t: "num" },
+                            { n: "淨值", v: "ttake", t: "num-rg" }, { n: "去年總股息", v: "lastins", t: "num" }],
                         "data": dxv
                     });
                 });
