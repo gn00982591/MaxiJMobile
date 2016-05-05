@@ -1,6 +1,138 @@
 ﻿
+<div class="searcher">
+    <div>
+        <a href="#" id="aup">新增</a>
+    </div>
+</div>
+<div id="dvupupd" class="upd" title="增修">
+    <form id="frmupupd">
+        <input type="hidden" name="cSeq" id="cSeq" />
+        <table>
+            <tr>
+                <th>名稱</th>
+                <td>
+                    <input id="cName" name="cName" type="text" maxlength="20" size="12" placeholder="名稱" />
+                </td>
+            </tr>
+            <tr>
+                <th>分類</th>
+                <td>
+                    <select id="cType" name="cType"></select>
+                </td>
+            </tr>
+            <tr>
+                <th>金額</th>
+                <td>
+                    <input id="cAmount" name="cAmount" type="number" maxlength="18" size="12" placeholder="金額" />
+                </td>
+            </tr>
+            <tr>
+                <th>到期日</th>
+                <td>
+                    <input id="cEndDt" name="cEndDt" type="date" maxlength="10" size="12" placeholder="到期日" />
+                </td>
+            </tr>
+            <tr>
+                <th>描述</th>
+                <td>
+                    <input name="cDesc" type="text" maxlength="50" size="18" placeholder="描述" />
+                </td>
+            </tr>
+
+        </table>
+        <div class="dvupbtn">
+            <button id="bupd" type="button">確認</button>
+            <button id="reset" type="reset">重設</button>
+        </div>
+    </form>
+</div>
+<div class="data">
+    <table>
+        <tr>
+            <td>
+                <div id="pie" style="opacity :0.8;"></div>
+            </td>
+            <td id="dvtran"></td>
+        </tr>
+        <tr>
+            <td colspan="2" id="dvdata"></td>
+        </tr>
+    </table>
+</div>
 @section scripts {
     <script>
-        $(window).load(function () { });
+        var updateitem = null;
+        function getData() {
+            @*$.post('@Url.Content("~/Select/getAlimonyCalculate")').done(function (d) {
+                var oj = $("#calculate");
+                for (var i in d) { oj.find("td[name='" + i + "']").text(d[i]) }
+            });
+            $.post('@Url.Content("~/Select/getAlimonyChart")').done(function (d) {
+                chardata = d;
+                setChart();
+            });*@
+            $.post('@Url.Content("~/Select/getBankAll")').done(function (d) {
+                updateitem = d[0];
+                $("#dvdata").tableData({
+                    "title": "現額",
+                    "th": [{ n: "名稱", v: "cName" }, { n: "分類", v: "cTypeDescName" }, { n: "金額", v: "cAmount", t: "num" }, { n: "到期日", v: "cEndDt" },
+                        { n: "描述", v: "cDesc", t: "txt-most" },
+                        {
+                            n: "修改", t: "btn", f: function (e) {
+                                var frm = $("#frmupupd");
+                                for (var g in e) { frm.find("[name='" + g + "']").val(e[g]); }
+                                $("#dvupupd").dialogopen();
+                            }
+                        },
+                        {
+                            n: "刪除", t: "btn", f: function (e, t) {
+                                var tr = $(t).parents("tr:first");
+                                if (tr.find(":checkbox[name='isselect']").prop("checked")) {
+                                    $.post('@Url.Content("~/Insert/setBankDelete")', { o: parseInt(tr.find("[name='cSeq']").val()) })
+                                            .done(function (q) {
+                                                getData();
+                                                $.alert(q.msg);
+                                            });
+                                } else { $.alert("X1：「選」未勾選，該項無法刪除!!!"); return; }
+                            }
+                        }, { n: "選", t: "bool-select" }],
+                    "hidden": ["cSeq", "cType"],
+                    "data": d
+                });
+            });
+        }
+
+        $(window).load(function () {
+            getData();
+            /*新增*/
+            $("#aup").click(function () {
+                $("#reset").click();
+                $("#dvupupd").dialogopen();
+            });
+            /*新增確認*/
+            $("#bupd").click(function () {
+                if ($.isNoneEmpty($("#cName,#cAmount"))) { return; }
+                if ($("#cSeq").val() == "") {
+                    $.post('@Url.Content("~/Insert/setBankInsert")', $("#frmupupd").serialize())
+                        .done(function (q) {
+                            getData();
+                            $.alert(q.msg);
+                        });
+                } else {
+                    var dv = $("#dvupupd");
+                    for (var g in updateitem) { updateitem[g] = dv.find('[name="' + g + '"]').val(); }
+                    $.post('@Url.Content("~/Insert/setBankUpdate")', updateitem)
+                        .done(function (q) {
+                            getData();
+                            $.alert(q.msg);
+                        });
+                }
+                $("#dvupupd").dialog("close");
+            });
+            /*到期日*/
+            $("#cEndDt").datepickeropen();
+            /*分類*/
+            $("#cType").getCodeOpt({ "cupid": "04001" });
+        });
     </script>
 }
