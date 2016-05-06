@@ -52,11 +52,14 @@
 }
 
 .site-lead {
-    font-size: 22px;
     font-family: 'Open Sans', sans-serif;
 }
 
 p {
     margin: 0 0 10px;
+    font-size: 24px;
 }
 
+span {
+    font-size: 24px;
+}
