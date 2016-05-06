@@ -82,9 +82,10 @@
             @RenderBody()
             <div id="dialog"></div>
             <div id="debug"></div>
+            <iframe id="ifrm" style="display:none;"></iframe>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016050603
+            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016050604
         </footer>
     </div>
     <script>
@@ -103,9 +104,9 @@
     @RenderSection("scripts", required: false)
     <script>
         /*取得股票即時資料*/
-        setTimeout(function(){$.post('@Url.Content("~/Select/StockOnlin")');},10000);
+        setTimeout(function(){ $("#ifrm").prop("src",'@Url.Content("~/Select/StockOnlin")'); },5000);
         /*Cookie只存超過*/
-        setTimeout(function(){$("*").click(function(){location.reload();});}, @(csProp.CookiesLift)-1);
+        setTimeout(function(){ $("*").click(function(){location.reload();});}, @(csProp.CookiesLift)-1);
     </script>
 </body>
 </html>
