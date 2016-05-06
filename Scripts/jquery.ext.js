@@ -298,7 +298,10 @@
             });
         },
         /*dialog*/
-        "dialogopen": function () { $(this).dialog({ autoOpen: true, modal: true, width: "auto" }); return $(this); },
+        "dialogopen": function () {
+            $(this).dialog({ autoOpen: true, modal: true, width: "auto", open: function () { $(this).addClass("data").css("opacity", 1); } });
+            return $(this);
+        },
         /*datepicker*/
         "datepickeropen": function () {
             if (!isChrome) {

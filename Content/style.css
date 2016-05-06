@@ -1,16 +1,4 @@
-﻿@font-face {
-    font-family: 'cwTeXFangSong';
-    font-style: normal;
-    font-weight: 500;
-    src: url(//fonts.gstatic.com/ea/cwtexfangsong/v3/cwTeXFangSong-zhonly.eot);
-    src: url(//fonts.gstatic.com/ea/cwtexfangsong/v3/cwTeXFangSong-zhonly.eot?#iefix) format('embedded-opentype'), url(//fonts.gstatic.com/ea/cwtexfangsong/v3/cwTeXFangSong-zhonly.woff2) format('woff2'), url(//fonts.gstatic.com/ea/cwtexfangsong/v3/cwTeXFangSong-zhonly.woff) format('woff'), url(//fonts.gstatic.com/ea/cwtexfangsong/v3/cwTeXFangSong-zhonly.ttf) format('truetype');
-}
-
-*, select {
-    font-family: 'cwTeXFangSong', serif;
-}
-
-/*常用*/
+﻿/*常用*/
 .none {
     display: none;
 }
@@ -33,6 +21,10 @@
 
 .pointer {
     cursor: pointer;
+}
+
+*{
+    font-size:14px;
 }
 
 body {
@@ -84,7 +76,7 @@ body {
             height: 100vh;
             min-height: 100%;
             width: 100%;
-            background-image: url(""), url(https://unsplash.imgix.net/reserve/URG2BbWQQ9SAcqLuTOLp_BP7A9947.jpg?q=75&fm=jpg&s=604dc379bd8749d90ca2b9c8ec270f63);
+            background-image: url(""), url(images/background/URG2BbWQQ9SAcqLuTOLp_BP7A9947.jpg);
             background-position: top left, center center;
             background-size: auto, cover;
             background-repeat: repeat, no-repeat;
@@ -284,8 +276,7 @@ table td, table th {
 /* Sweep To Bottom */
 button {
     border: 0;
-    font-family: 'cwTeXFangSong', serif;
-    padding: 2px 7px;
+    padding: 3px 10px;
     display: inline-block;
     vertical-align: middle;
     -webkit-transform: translateZ(0);
@@ -442,7 +433,6 @@ a {
     .searcher input, .searcher select {
         opacity: 0.3;
         border-width: 0;
-        font-family: 'cwTeXFangSong', serif;
     }
 
         .searcher input:focus, .searcher input:hover, .searcher select:hover {
@@ -538,18 +528,12 @@ a {
 
 .upd {
     display: none;
-    font-family: 'cwTeXFangSong', serif;
 }
-
-    .upd .dvupbtn button, .upd td input, .upd td select {
-        font-family: 'cwTeXFangSong', serif;
-    }
 
     .upd .dvupbtn {
         text-align: center;
         padding-top: 20px;
         padding-bottom: 10px;
-        font-family: 'cwTeXFangSong', serif;
     }
 
 input[type=number] {

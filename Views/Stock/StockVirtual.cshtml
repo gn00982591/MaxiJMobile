@@ -37,7 +37,8 @@
                        "data": x,
                        "msg": ["@csProp.csTip.Stock.Cost_Desc_001",
                            "@csProp.csTip.Stock.Cost_Desc_002",
-                           "@csProp.csTip.Stock.Cost_Desc_003"],
+                           "@csProp.csTip.Stock.Cost_Desc_003",
+                           "「成本均價」僅以「成本」除以「總量」。"],
                        "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "均價", v: "cAvgPrice", t: "num" },
                            { n: "收價", v: "cPrice", t: "num" }, { n: "成本", v: "cCost", t: "num" },
                            {
@@ -47,14 +48,13 @@
                                        isvertical: true,
                                        vercr: 1,
                                        "data": e,
-                                       "msg": ["「成本均價」僅以「成本」除以「總量」。"],
                                        "th": [{ n: "名稱", v: "cName" }, { n: "代號", v: "cId" }, { n: "庫存", v: "cQty", t: "num" }, { n: "收價", v: "cPrice", t: "num" },
                                            { n: "分類", v: "cAct", t: "sel-codeopt", "cupid": "01001", "hasid": true, "change": function (e) { chk(e); } },
                                            { n: "目標張數", v: "cTargetQty", t: "txt", "hasid": true, "d": 0, "change": function (e) { chk(e); } },
                                            { n: "目標成交價", v: "cTargetPrice", t: "txt", "hasid": true, "d": e.cPrice, "change": function (e) { chk(e); } },
                                            { n: "手續費", v: "cFee", t: "num", "hasid": true },
                                            { n: "結存庫存", v: "cFinQty", t: "num", "hasid": true }, { n: "出清手續費", v: "cFinFee", t: "num", "hasid": true },
-                                           { n: "成本均價", v: "cAvgCost", t: "num", "hasid": true }, { n: "計算", t: "btn", f: function (e) { chk(e); } }]
+                                           { n: "成本均價", v: "cAvgCost", t: "num", "hasid": true }]
                                    });
                                }
                            }]

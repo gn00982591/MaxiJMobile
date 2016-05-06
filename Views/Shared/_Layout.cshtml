@@ -60,12 +60,18 @@
                                 {
                                     foreach (var i in db.tUrl.Where(s => s.cEnable && s.cUpId != csProp.WayPageId && s.cUpId == tul.cId).OrderBy(s => s.cSort))
                                     {
-                                        <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
+                                        <li class='menu-item scroll'>
+                                            <a href='/@i.cFolder/@i.cPage'>@i.cName</a>
+                                        </li>
                                     }
-                                    <li class='menu-item scroll'><a href='#'></a></li>
+                                    <li class='menu-item scroll'>
+                                        <a href='#'></a>
+                                    </li>
                                     foreach (var i in db.tUrl.Where(s => s.cEnable && s.cUpId == csProp.WayPageId).OrderBy(s => s.cSort))
                                     {
-                                        <li class='menu-item scroll'><a href='/@i.cFolder/@i.cPage'>@i.cName</a></li>
+                                        <li class='menu-item scroll'>
+                                            <a href='/@i.cFolder/@i.cPage'>@i.cName</a>
+                                        </li>
                                     }
                                 }
                             }
@@ -76,9 +82,9 @@
             @RenderBody()
             <div id="dialog"></div>
             <div id="debug"></div>
-        </div>       
+        </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016050601
+            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016050602
         </footer>
     </div>
     <script>

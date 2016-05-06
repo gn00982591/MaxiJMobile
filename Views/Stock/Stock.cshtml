@@ -25,10 +25,11 @@
         </tr>
         <tr>
             <td id="dvdata"></td>
-            <td id="dvtran"></td>
+            @*<td id="dvtran"></td>*@
         </tr>
     </table>
 </div>
+<div style="opacity:1" id="dvtran"></div>
 @section scripts {
     <script>
         var chardata = null, dv = null;
@@ -56,11 +57,17 @@
                                     .done(function (x) {
                                         $("#dvtran").tableData({
                                             "title": e["cName"] + "-" + e["cId"],
+                                            isnonebotton: true,
                                             "th": [{ n: "分類", v: "cActName" }, { n: "數量(股)", v: "cQty", t: "num" }, { n: "成交價", v: "cPrice", t: "num" },
                                                 { n: "手續費", v: "cFee", t: "num" }, { n: "成交日", v: "cTranDt" }],
                                             "hidden": ["cSeq", "cId", "cAct"],
                                             "data": x
-                                        });
+                                        }).dialogopen();
+                                        //$("#dvtran").dialog({
+                                        //    autoOpen: true, modal: true, width: "auto", open: function () {
+                                        //        $(this).prop({ "class": "data", "style": "opacity:1" });
+                                        //    }
+                                        //});
                                     });
                             }
                         },
