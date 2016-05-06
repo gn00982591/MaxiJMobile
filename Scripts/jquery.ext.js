@@ -63,7 +63,9 @@
                 r2 = Number(num2.toString().replace(".", ""))
                 return (r1 / r2) * pow(10, t2 - t1);
             }
-        }
+        },
+        /*百分比計算*/
+        "percent": function (num1, num2) { return $.multiplication($.division(num1, num2), 100).toFixed(2) + "%"; }
     });
 
     $.fn.extend({
