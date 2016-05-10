@@ -72,7 +72,7 @@
                         chartd.push({ "name": d[i].cName, "y": d[i].cAmount });
                         titld[0].cAmount = $.addition(titld[0].cAmount, d[i].cAmount);
                     }
-                    titld[1].cAmount = $.addition(titld[0].cAmount, d[i].cAmount);
+                    titld[1].cAmount = $.addition(titld[1].cAmount, d[i].cAmount);
                 }
                 $("#pie").charts({ "title": "現額分布", data: chartd });
                 $("#dvtran").tableData({
