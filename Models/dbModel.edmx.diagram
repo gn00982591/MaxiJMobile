@@ -12,6 +12,7 @@
         <EntityTypeShape EntityType="db850b60b99a9145fea7aea52f005a5589Model.tStockClearing" Width="1.5" PointX="5.375" PointY="0.75" />
         <EntityTypeShape EntityType="db850b60b99a9145fea7aea52f005a5589Model.tStockTran" Width="1.5" PointX="5.375" PointY="3.75" />
         <EntityTypeShape EntityType="db850b60b99a9145fea7aea52f005a5589Model.tBank" Width="1.5" PointX="7.375" PointY="0.75" />
+        <EntityTypeShape EntityType="db850b60b99a9145fea7aea52f005a5589Model.tLogin" Width="1.5" PointX="7.375" PointY="3.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

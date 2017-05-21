@@ -1,0 +1,32 @@
+﻿
+    <div id="my-signin2" data-theme="dark"></div>
+    <a href="#" onclick="signOut();">Sign out</a>
+
+    <script>
+        function onSuccess(googleUser) {
+            console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+        }
+        function onFailure(error) {
+            console.log(error);
+        }
+        function renderButton() {
+            gapi.signin2.render('my-signin2', {
+                'scope': 'profile email',
+                'width': 25,
+                'height': 25,
+                'longtitle': true,
+                'onsuccess': onSuccess,
+                'onfailure': onFailure
+            });
+        }
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                auth2.disconnect();
+                console.log('User signed out.');
+            });
+        }
+        //$("#my-signin2").click(function () {
+        //    var au = gapi.auth2;
+        //});
+    </script>

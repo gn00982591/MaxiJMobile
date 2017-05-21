@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="robots" content="noindex,nofollow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="430580124379-lija2oi62jtgp7q5lsqnstds534ofegk.apps.googleusercontent.com">
     <meta name="description" content="Just Moto Story" />
     <link href="~/Content/icon.ico" rel="shortcut icon" />
     <title>@(ViewContext.TitleName()) - Moto Sotry</title>
@@ -46,6 +48,7 @@
             <section class="main-sidebar">
                 <ul class="main-menu">
                     @{
+                        /*登入*/
                         if (!csProp.isCurrentUser && ViewContext.ControllerName().ToStringUpper() != "OAUTH")
                         { Response.Redirect("/OAuth/Index"); }
 
@@ -85,7 +88,9 @@
             <iframe id="ifrm" style="display:none;"></iframe>
         </div>
         <footer class="ui-footer-fixed">
-            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016051001
+            &copy; Copy Right 2015 - @(DateTime.Now.ToTwDateTime().Year) Maximus Chang ver.2016092101
+            <div id="googlesignin2" class="customGPlusSignIn">
+            </div>
         </footer>
     </div>
     <script>
@@ -101,12 +106,32 @@
         };
     </script>
     @Scripts.Render("~/bundles/jquery")
+    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
     @RenderSection("scripts", required: false)
     <script>
         /*取得股票即時資料*/
         setTimeout(function(){ $("#ifrm").prop("src",'@Url.Content("~/Select/StockOnlin")'); },5000);
         /*Cookie只存超過*/
         setTimeout(function(){ $("*").click(function(){location.reload();});}, @(csProp.CookiesLift)-1);
+        function onSuccess(googleUser) { console.log('Logged in as: ' + googleUser.getBasicProfile().getName()); }
+        function onFailure(error) { console.log(error); }
+        function renderButton() {
+            gapi.signin2.render('googlesignin2', {
+                'scope': 'profile email',
+                'width': 25,
+                'height': 25,
+                'theme': 'dark',
+                'onsuccess': onSuccess,
+                'onfailure': onFailure
+            });
+        }
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                auth2.disconnect();
+                console.log('User signed out.');
+            });
+        }
     </script>
 </body>
 </html>

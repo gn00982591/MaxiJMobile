@@ -100,6 +100,7 @@
                 /*設定資料表的 Title*/
                 if (obj.title != "" && !$.isEmptyObject(obj.title)) { t.append("<span class='title'>" + obj.title + "</span>"); }
                 var tb = $("<table/>", { "class": "main" });
+                /*資料下方是否產生大區間*/
                 if (obj.isnonebotton) { tb.css("margin-bottom", "20px"); }
                 /*欄位名稱*/
                 if (!obj.isvertical) {
